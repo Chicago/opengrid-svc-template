@@ -1,0 +1,60 @@
+{
+     "type" : "FeatureCollection",
+    "features" : [
+        {
+            "type": "Feature",
+            "properties": {
+                "_id": "197479705333600257",
+                "date": "01/01/2014 05:01 pm",
+                "screenName": "MissSticker",
+                "text": "@KarynTeaches @mentortexts @howeprincipal LOVE. This.",
+                "city": "Chicago, IL",
+                "bio": "National Board Certified First Grade Teacher",
+                "hashtags": "#love #howeprincipal",
+                "lat": 41.88406,
+                "long": -87.63024
+            },
+            "geometry": {"type": "Point", "coordinates": [-87.63024, 41.88406]}
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "_id": "197479705333600258",
+                "date": "01/01/2014 05:10 pm",
+                "screenName": "CynderRoach",
+                "text": "@Kickintheeteeth :D",
+                "city": "Chicago, IL",
+                "bio": "National Board Certified First Grade Teacher",
+                "hashtags": "#love #howeprincipal",
+                "lat": 41.88563,
+                "long":-87.61846
+            },
+            "geometry": {"type": "Point", "coordinates": [-87.61846, 41.88563]}
+        }
+    ],
+    "meta": {
+        "view": {
+            "id": "twitter", "displayName": "Twitter",
+            "options": {
+                "rendition": {
+                    "icon":"default",
+                    "color": "cyan",
+                    "fillColor": "yellow",
+                    "opacity":50,
+                    "size":10
+                }
+            },
+            "columns": [
+                {"id":"_id", "displayName":"ID", "dataType":"string", "filter":false, "popup":false, "list":false},
+                {"id":"date", "displayName":"Date", "dataType":"date", "filter":true, "popup":true, "list":true, "sortOrder":1},
+                {"id":"screenName", "displayName":"Screen Name", "dataType":"string", "filter":true, "popup":true, "list":true, "sortOrder":2},
+                {"id":"text", "displayName":"Text", "dataType":"string", "filter":true, "popup":true, "list":true, "sortOrder":3},
+                {"id":"city", "displayName":"City", "dataType":"string", "filter":true, "popup":true, "list":true, "sortOrder":4},
+                {"id":"bio", "displayName":"Bio", "dataType":"string","sortOrder":5},
+                {"id":"hashtags", "displayName":"Hashtags", "dataType":"string", "sortOrder":6},
+                {"id":"lat", "displayName":"Latitude", "dataType":"float", "list":true, "sortOrder":7},
+                {"id":"long", "displayName":"Longitude", "dataType":"float", "list":true, "sortOrder":8}
+            ]
+        }
+    }
+}

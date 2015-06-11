@@ -1,0 +1,23 @@
+{
+    "id": "twitter", "displayName": "Twitter",
+    "options": {
+        "rendition": {
+            "icon":"default",
+            "color": "cyan",
+            "fillColor": "yellow",
+            "opacity":50,
+            "size":10
+        }
+    },
+    "columns": [
+        {"id":"_id", "displayName":"ID", "dataType":"string", "filter":false, "popup":false, "list":false},
+        {"id":"date", "displayName":"Date", "dataType":"date", "filter":true, "popup":true, "list":true, "sortOrder":1},
+        {"id":"screenName", "displayName":"Screen Name", "dataType":"string", "filter":true, "popup":true, "list":true, "sortOrder":2},
+        {"id":"text", "displayName":"Text", "dataType":"string", "filter":true, "popup":true, "list":true, "sortOrder":3},
+        {"id":"city", "displayName":"City", "dataType":"string", "filter":true, "popup":true, "list":true, "sortOrder":4},
+        {"id":"bio", "displayName":"Bio", "dataType":"string","sortOrder":5},
+        {"id":"hashtags", "displayName":"Hashtags", "dataType":"string", "sortOrder":6},
+        {"id":"lat", "displayName":"Latitude", "dataType":"float", "list":true, "sortOrder":7},
+        {"id":"long", "displayName":"Longitude", "dataType":"float", "list":true, "sortOrder":8}
+    ]
+}

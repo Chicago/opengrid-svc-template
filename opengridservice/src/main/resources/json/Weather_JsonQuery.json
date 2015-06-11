@@ -1,0 +1,14 @@
+	{
+		"_id": "197479705333600260",
+		"temp": 54.5 ,
+		"windspeed": 5,
+		"condition": "Mostly Cloudy",
+		"humidity": 0.73,
+		"precipIntensity": 0,
+		"date": "05/20/2015 4:56 pm",
+		"zipcode": 60601,
+		"forecast": "Mixed precipitation in the morning and evening",
+		"icon": "partly-cloudy-day",
+		"lat": 41.88563,
+		"long":-87.61846
+	}
