@@ -27,6 +27,8 @@
 	<!--  Mongo-based data providers -->
 	<bean id="twitterDataProvider" class="org.opengrid.data.impl.TwitterMongoDataProvider"/>
 	<bean id="weatherDataProvider" class="org.opengrid.data.impl.WeatherMongoDataProvider"/>
+	<bean id="queryDataProvider" class="org.opengrid.data.impl.QueryMongoDataProvider"/>
+	<bean id="queryDataUpdater" class="org.opengrid.data.impl.QueryMongoDataProvider"/>
 	
 	
 	<!--  other implementations are file-based; comment our bean definitions above to switch to the impls below --> 

@@ -3,7 +3,7 @@ package org.opengrid.data.impl;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.opengrid.data.DataProvider;
+import org.opengrid.data.Retrievable;
 import org.opengrid.data.MongoDBCollection;
 import org.opengrid.service.OpenGridException;
 
@@ -15,7 +15,7 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 
-public class WeatherMongoDataProvider implements DataProvider {
+public class WeatherMongoDataProvider implements Retrievable {
 
 	@Override
 	public String getData(String filter, int max, String sort) throws OpenGridException {

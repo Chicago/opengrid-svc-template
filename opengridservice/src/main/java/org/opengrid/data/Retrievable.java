@@ -2,7 +2,7 @@ package org.opengrid.data;
 
 import org.opengrid.service.OpenGridException;
 
-public interface DataProvider {
+public interface Retrievable {
 	String getId();
 	String getData(String filter, int max, String sort) throws OpenGridException;	
 	String getDescriptor() throws OpenGridException;	

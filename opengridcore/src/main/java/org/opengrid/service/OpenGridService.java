@@ -206,14 +206,17 @@ public interface OpenGridService {
 	@Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML, MediaType.TEXT_PLAIN})
 	@Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML, MediaType.TEXT_PLAIN})
 	@Path("/queries")
-	public String getOpenGridQueriesList();
+	public String getOpenGridQueriesList(@QueryParam("q") final String filter,
+										@QueryParam("n") final int max,
+										@QueryParam("s") final String sort);
 	
 	@POST 
 	@Description(value="Resource", target="Doctarget.RESOURCE")
 	@Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML, MediaType.TEXT_PLAIN})
 	@Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML, MediaType.TEXT_PLAIN})
 	@Path("/queries")
-	public String addOpenGridNewQuery();
+	public String addOpenGridNewQuery(final String requestBody);
+	//public String addOpenGridNewQuery(@QueryParam("o") final String entity);
 		
 	@GET 
 	@Description(value="Resource", target="Doctarget.RESOURCE")
@@ -227,7 +230,8 @@ public interface OpenGridService {
 	@Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML, MediaType.TEXT_PLAIN})
 	@Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML, MediaType.TEXT_PLAIN})
 	@Path("/queries/{queryId}")
-	public OpenGridResult updateOpenGridOneQuery(@PathParam("queryId") final String queryId);
+	public OpenGridResult updateOpenGridOneQuery(@PathParam("queryId") final String queryId,
+										@QueryParam("o") final String entity);
 	
 	
 	@DELETE 

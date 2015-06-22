@@ -1,6 +1,7 @@
 package org.opengrid.service;
 
-import org.opengrid.data.DataProvider;
+import org.opengrid.data.Retrievable;
+import org.opengrid.data.Updatable;
 import org.opengrid.data.impl.TwitterFileDataProvider;
 import org.opengrid.pojo.*;
 
@@ -15,6 +16,7 @@ import java.util.Map;
 import java.util.Scanner;
 
 import javax.annotation.Resource;
+import javax.ws.rs.QueryParam;
 
 import org.opengrid.pojo.PojoMapper;
 import org.opengrid.pojo.UsersPojo;
@@ -24,10 +26,17 @@ import org.springframework.stereotype.Component;
 public class OpenGridServiceImpl implements OpenGridService {
 
 	@Resource(name="twitterDataProvider")
-	private DataProvider twitterDataProvider;
+	private Retrievable twitterDataProvider;
 	
 	@Resource(name="weatherDataProvider")
-	private DataProvider weatherDataProvider;
+	private Retrievable weatherDataProvider;
+	
+	@Resource(name="queryDataProvider")
+	private Retrievable queryDataProvider;
+
+	@Resource(name="queryDataUpdater")
+	private Updatable queryDataUpdater;
+
 	
 	@Override
 	public String getAllOpenGridLists() {
@@ -425,57 +434,63 @@ public class OpenGridServiceImpl implements OpenGridService {
 	}
 
 	@Override
-	public String getOpenGridQueriesList() {
-		//mock response for now, not implemented for Sprint 1
-		DataObjects myObject = new DataObjects();
-
-		myObject.setId("504bd6582c176712c214d370");
-		myObject.setName("db.windygrid.findOne({'type' : '311'})");
-
-		return myObject.getName();
+	public String getOpenGridQueriesList(String filter, int max, String sort) {
+		String err="";
+		try {
+			return queryDataProvider.getData(filter, max, sort);
+			
+		} catch (Exception e) {
+			err = e.getMessage();
+			e.printStackTrace();			
+		}
+		//return error, implement in a later Sprint
+		return "{datasetId:query, filter:" + filter + ", max:" + max + ", error: " + err + "}";
 	}
 
 	@Override
-	public String addOpenGridNewQuery() {
-		//mock response for now, not implemented for Sprint 1
-		DataObjects myObject = new DataObjects();
-
-		myObject.setId("504bd6582c176712c214d370");
-		myObject.setName("db.windygrid.findOne({'type' : '311'})");
-
-		return myObject.getName();
+	public String addOpenGridNewQuery(String entity) {
+		String err="";
+		try {
+			queryDataUpdater.update(null, entity);
+			
+			//return success? (cleanup/standardize later)
+			return "{}";						
+		} catch (Exception e) {
+			err = e.getMessage();
+			e.printStackTrace();			
+		}
+		//return error, implement in a later Sprint
+		return "{datasetId: query, op: new, error: " + err + "}";
 	}
 
 	@Override
 	public String getOpenGridOneQuery(String queryId) {
-		//mock response for now, not implemented for Sprint 1
-		DataObjects myObject = new DataObjects();
-		if (queryId.equalsIgnoreCase("504bd6582c176712c214d370")) {
-			myObject.setId("504bd6582c176712c214d370");
-			myObject.setName("db.windygrid.findOne({'user1' : 'kaslkasfa'})");
-
-			return myObject.getName();
-		} else {
-			myObject.setErrorMessage("groupId is not matched");
-
-			return myObject.getErrorMessage();
+		String err="";
+		String filter = "{\"_id\": {\"$eq\": " + queryId + "}}";
+		try {
+			return queryDataProvider.getData(filter, 1, null);
+			
+		} catch (Exception e) {
+			err = e.getMessage();
+			e.printStackTrace();			
 		}
+		//return error, implement in a later Sprint
+		return "{datasetId: query, filter:" + filter + ", max: 1, error: " + err + "}";
 	}
 
 	@Override
-	public OpenGridResult updateOpenGridOneQuery(String queryId) {
-		//mock response for now, not implemented for Sprint 1
-		OpenGridResult response = new OpenGridResult();
-
-		if (queryId != null) {
-			response.setStatusMessage("WindyGrid Service Get Success !");
-			response.setStatusType(OpenGridResultStatusEnum.SUCCESS);
-
-		} else {
-			response.setStatusMessage("WindyGrid Get Failed !");
-			response.setStatusType(OpenGridResultStatusEnum.FAIL);
+	public OpenGridResult updateOpenGridOneQuery(String queryId, String entity) {
+		String err="";
+		try {
+			queryDataUpdater.update(queryId, entity);
+			
+			//return success? (cleanup/standardize later)
+			return null;						
+		} catch (Exception e) {
+			err = e.getMessage();
+			e.printStackTrace();			
 		}
-		return response;
+		return null;
 	}
 
 	@Override

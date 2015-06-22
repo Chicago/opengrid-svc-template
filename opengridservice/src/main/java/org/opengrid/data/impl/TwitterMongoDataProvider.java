@@ -3,7 +3,7 @@ package org.opengrid.data.impl;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.opengrid.data.DataProvider;
+import org.opengrid.data.Retrievable;
 import org.opengrid.data.MongoDBCollection;
 import org.opengrid.service.OpenGridException;
 
@@ -15,7 +15,7 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 
-public class TwitterMongoDataProvider implements DataProvider {
+public class TwitterMongoDataProvider implements Retrievable {
 
 	@Override
 	public String getData(String filter, int max, String sort) throws OpenGridException {
@@ -52,7 +52,7 @@ public class TwitterMongoDataProvider implements DataProvider {
 	        	i++;
 	        	
 	        	//temp limit
-	        	//if (i==1000) 
+	        	//if (i==500) 
 	        	//	break;
 	        }
 	        sb.append("],");

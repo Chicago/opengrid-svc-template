@@ -1,0 +1,17 @@
+{
+	"name": "Weather Records for 60601",
+	"owner": "jsmith",
+	"spec": [
+		{ 
+			"dataSetId": "weather",
+			"filters": {"condition":"AND","rules":[{"id":"zipcode","field":"zipcode","type":"string","input":"text","operator":"equal","value":"60601"}]}, 
+			"rendition": {
+				"color": "red",
+                "opacity": 85,
+                "size": 6
+			}
+		}		
+	],
+	"sharedWith": {"users": [], "groups":[]},
+	"isCommon": false
+}

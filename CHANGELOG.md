@@ -1,5 +1,10 @@
 #OpenGrid Service Changelog
 
+
+##0.0.1-Sprint 2-dev (master)
+* Saving and retrieval of query definition
+
+
 ##0.0.1-Sprint 1-dev (master)
 
 ### Initial commit for Sprint 1

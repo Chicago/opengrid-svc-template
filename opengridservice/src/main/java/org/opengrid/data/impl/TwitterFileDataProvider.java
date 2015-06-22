@@ -1,10 +1,10 @@
 package org.opengrid.data.impl;
 
-import org.opengrid.data.DataProvider;
+import org.opengrid.data.Retrievable;
 import org.opengrid.service.OpenGridException;
 import org.opengrid.util.FileUtil;
 
-public class TwitterFileDataProvider implements DataProvider {
+public class TwitterFileDataProvider implements Retrievable {
 
 	@Override
 	public String getData(String filter, int max, String sort) throws OpenGridException {

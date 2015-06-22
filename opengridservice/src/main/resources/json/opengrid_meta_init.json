@@ -89,8 +89,12 @@
          "id":"weather",
          "displayName":"Weather",
          "options":{
-            "rendition":{
-               "icon":"marker"
+           "rendition":{
+               "icon":"default",
+               "color":"#8c2d04",
+               "fillColor":"#fdae6b",
+               "opacity":85,
+               "size":6
             }
          },
          "columns":[
@@ -159,7 +163,7 @@
             {
                "id":"zipcode",
                "displayName":"Zip Code",
-               "dataType":"number",
+               "dataType":"string",
                "filter":true,
                "popup":true,
                "list":true,

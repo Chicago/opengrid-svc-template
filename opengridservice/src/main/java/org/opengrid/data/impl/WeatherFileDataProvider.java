@@ -1,10 +1,10 @@
 package org.opengrid.data.impl;
 
-import org.opengrid.data.DataProvider;
+import org.opengrid.data.Retrievable;
 import org.opengrid.service.OpenGridException;
 import org.opengrid.util.FileUtil;
 
-public class WeatherFileDataProvider implements DataProvider {
+public class WeatherFileDataProvider implements Retrievable {
 
 
 	@Override
