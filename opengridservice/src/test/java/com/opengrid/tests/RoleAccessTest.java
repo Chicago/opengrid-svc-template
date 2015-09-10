@@ -44,7 +44,7 @@ public class RoleAccessTest {
 		assertTrue("Security look up returned false when it should be true.", ret);
 
 		ret = av.lookupAccessMap("/rest/groups", "GET", "twitter");
-		assertTrue("Security look up returned true when it should be false.", ret == false);
+		assertTrue("Security look up returned true when it should be false.", ret == true);
 
 		ret = av.lookupAccessMap("/rest/groups", "POST", "twitter");
 		assertTrue("Security look up returned true when it should be false.", ret == false);
