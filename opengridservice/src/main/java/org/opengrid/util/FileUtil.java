@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Scanner;
 
-import org.opengrid.service.OpenGridException;
+import org.opengrid.constants.Exceptions;
 
 public class FileUtil {
 	
@@ -43,7 +43,7 @@ public class FileUtil {
 			ex.printStackTrace();
 			
 			//wrap and bubble up
-			throw new OpenGridException(ex);
+			throw ExceptionUtil.getException(Exceptions.ERR_SERVICE, ex.getMessage());
 		} finally {
 			if (is!=null) {
 				//ignore errors from close

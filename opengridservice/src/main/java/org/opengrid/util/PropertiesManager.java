@@ -31,7 +31,7 @@ public class PropertiesManager {
     public String getStringProperty(String propertyName) {
         return props.getProperty(propertyName);
     }
-
+    
     public boolean getBooleanProperty(String propertyName) {
         return (props.getProperty(propertyName).equalsIgnoreCase("true") ? true : false);
     }

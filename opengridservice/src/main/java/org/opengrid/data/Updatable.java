@@ -1,7 +1,8 @@
 package org.opengrid.data;
 
-import org.opengrid.service.OpenGridException;
+import org.opengrid.exception.ServiceException;
 
 public interface Updatable {
-	void update(String id, String entity) throws OpenGridException;
+	String update(String id, String entity) throws ServiceException;
+	void delete(String id) throws ServiceException;
 }

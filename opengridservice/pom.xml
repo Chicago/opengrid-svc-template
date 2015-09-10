@@ -6,13 +6,29 @@
   <packaging>war</packaging>
   <name>OpenGrid Service</name>
   
+  <properties> 
+    <spring.version>4.1.1.RELEASE</spring.version>
+    <cxf.version>2.7.14</cxf.version>
+    <maven.version>3.2</maven.version>
+    <jackson.version>2.5.4</jackson.version>
+    <opengridcore.version>0.0.1-SNAPSHOT</opengridcore.version>
+    <javaxservlet.version>2.5</javaxservlet.version>
+    <mongodb.version>2.12.4</mongodb.version>
+    <json.version>20140107</json.version>
+    <springsecurity.version>3.2.5.RELEASE</springsecurity.version>
+    <jjwt.version>0.4</jjwt.version>    
+    <log4j.version>1.2.17</log4j.version>
+    <hibernate-jpa2.version>1.0.1.Final</hibernate-jpa2.version>
+    <junit.version>4.12</junit.version>
+  </properties>
+  
   <build>
 		<finalName>opengrid-service</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.2</version>
+				<version>${maven.version}</version>
 				<configuration>
 					<source>1.6</source>
 					<target>1.6</target>
@@ -22,41 +38,35 @@
 	</build>
 	<dependencies>
 		<dependency>
-			<groupId>opengrid</groupId>
-			<artifactId>opengrid-core</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
-	
-		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>servlet-api</artifactId>
-			<version>2.5</version>
+			<version>${javaxservlet.version}</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>
-			<version>4.1.1.RELEASE</version>
+			<version>${spring.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-core</artifactId>
-			<version>4.1.1.RELEASE</version>
+			<version>${spring.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-web</artifactId>
-			<version>4.1.1.RELEASE</version>
+			<version>${spring.version}</version>
 		</dependency>
 		<dependency>
 		<groupId>org.apache.cxf</groupId>
 			<artifactId>cxf-rt-ws-policy</artifactId>
-			<version>2.7.14</version>
+			<version>${cxf.version}</version>
 		</dependency>		
 		<dependency>
 			<groupId>org.apache.cxf</groupId>
 			<artifactId>cxf-bundle-jaxrs</artifactId>
-			<version>2.7.14</version>
+			<version>${cxf.version}</version>
 			<exclusions>
 				<exclusion>
 					<artifactId>geronimo-servlet_3.0_spec</artifactId>
@@ -64,27 +74,51 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-
 		<dependency>
-			<groupId>org.codehaus.jackson</groupId>
-			<artifactId>jackson-jaxrs</artifactId>
-			<version>1.9.13</version>
-		</dependency>
-		<dependency>
-		  <groupId>com.fasterxml.jackson.core</groupId>
-		  <artifactId>jackson-core</artifactId>
-		  <version>2.2.0</version>
-		</dependency>
-         <dependency>
-            <groupId>org.jsonschema2pojo</groupId>
-            <artifactId>jsonschema2pojo-core</artifactId>
-            <version>0.4.11</version>
-        </dependency>        
+			<groupId>com.fasterxml.jackson.jaxrs</groupId>
+			<artifactId>jackson-jaxrs-json-provider</artifactId>
+			<version>${jackson.version}</version>
+		</dependency>       
        <dependency>
 			<groupId>org.mongodb</groupId>
 			<artifactId>mongo-java-driver</artifactId>
-			<version>2.12.4</version>
-		</dependency>        
+			<version>${mongodb.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>${json.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-web</artifactId>
+			<version>${springsecurity.version}</version>
+		</dependency>
+ 		<dependency>
+    		<groupId>org.springframework.security</groupId>
+    		<artifactId>spring-security-config</artifactId>
+    		<version>${springsecurity.version}</version>
+		</dependency>
+ 		<dependency>
+    		<groupId>io.jsonwebtoken</groupId>
+    		<artifactId>jjwt</artifactId>
+    		<version>${jjwt.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>${log4j.version}</version>
+		</dependency>
+				<dependency>
+			<groupId>org.hibernate.javax.persistence</groupId>
+			<artifactId>hibernate-jpa-2.0-api</artifactId>
+			<version>${hibernate-jpa2.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${junit.version}</version>
+		</dependency>
+					        
 	</dependencies>
-	
 </project>

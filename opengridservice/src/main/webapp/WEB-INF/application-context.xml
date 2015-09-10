@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:jaxrs="http://cxf.apache.org/jaxrs"
+	xmlns:cxf="http://cxf.apache.org/core"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 		http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd
-		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.1.xsd">
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.1.xsd
+		http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd">
 
 	<!-- import apache cxf -->
 	<import resource="classpath:META-INF/cxf/cxf.xml" />
@@ -11,25 +13,47 @@
 
 
 	<context:annotation-config />
-	<context:component-scan base-package="org.opengrid.service"></context:component-scan>
+	<context:component-scan base-package="org.opengrid"></context:component-scan>
 
 	<jaxrs:server id="openGridService" address="/rest">
 		<jaxrs:serviceBeans>
 			<ref bean="OpenGridServiceBean" />
 		</jaxrs:serviceBeans>
+		
+		<jaxrs:extensionMappings>
+            <entry key="json" value="application/json"/>
+        </jaxrs:extensionMappings>
+        
+        <jaxrs:features>
+            <cxf:logging/>
+        </jaxrs:features>
 
 		<!-- jax jackson -->
 		<jaxrs:providers>
-			<bean id="jacksonProvider" class="org.codehaus.jackson.jaxrs.JacksonJsonProvider"></bean>
+			<bean class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider" />
+			<bean class="org.opengrid.exception.ServiceExceptionMapper" />
+			<bean class="org.opengrid.exception.ClientExceptionMapper" />
+            <bean class="org.opengrid.exception.ThrowableMapper" />
+            <bean class="org.opengrid.exception.NoSuchMethodExceptionMapper" />
 		</jaxrs:providers>
 	</jaxrs:server>
+	
 	
 	<!--  Mongo-based data providers -->
 	<bean id="twitterDataProvider" class="org.opengrid.data.impl.TwitterMongoDataProvider"/>
 	<bean id="weatherDataProvider" class="org.opengrid.data.impl.WeatherMongoDataProvider"/>
 	<bean id="queryDataProvider" class="org.opengrid.data.impl.QueryMongoDataProvider"/>
 	<bean id="queryDataUpdater" class="org.opengrid.data.impl.QueryMongoDataProvider"/>
+	<bean id="userDataProvider" class="org.opengrid.data.impl.UserMongoDataProvider"/>
+	<bean id="userDataUpdater" class="org.opengrid.data.impl.UserMongoDataProvider"/>
+	<bean id="groupDataProvider" class="org.opengrid.data.impl.GroupMongoDataProvider"/>
+	<bean id="groupDataUpdater" class="org.opengrid.data.impl.GroupMongoDataProvider"/>
 	
+	<!-- security beans  -->
+	<bean id="authManager" class="org.opengrid.security.impl.DBAuthenticationProvider"/>
+	<bean id="userDetailsService" class="org.opengrid.security.impl.MongoUserService"/>	
+	<bean id="roleAccessValidator" class="org.opengrid.security.impl.JwtRoleAccessValidator"/>
+	<bean id="tokenAuthService" class="org.opengrid.security.impl.MongoTokenAuthenticationService"/>
 	
 	<!--  other implementations are file-based; comment our bean definitions above to switch to the impls below --> 
 	<!-- <bean id="twitterDataProvider" class="org.opengrid.data.impl.TwitterFileDataProvider"/>

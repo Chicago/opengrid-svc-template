@@ -3,9 +3,11 @@ package org.opengrid.data.impl;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.opengrid.constants.Exceptions;
 import org.opengrid.data.Retrievable;
-import org.opengrid.data.MongoDBCollection;
-import org.opengrid.service.OpenGridException;
+import org.opengrid.data.MongoDBHelper;
+import org.opengrid.exception.ServiceException;
+import org.opengrid.util.ExceptionUtil;
 
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
@@ -18,8 +20,8 @@ import com.mongodb.util.JSON;
 public class TwitterMongoDataProvider implements Retrievable {
 
 	@Override
-	public String getData(String filter, int max, String sort) throws OpenGridException {
-		MongoDBCollection ds = new MongoDBCollection();
+	public String getData(String filter, int max, String sort) throws ServiceException {
+		MongoDBHelper ds = new MongoDBHelper();
 		DB db = ds.getConnection();
 				
 		try {
@@ -63,9 +65,8 @@ public class TwitterMongoDataProvider implements Retrievable {
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			
-			//bubble up
 			//wrap and bubble up
-			throw new OpenGridException(ex);
+			throw ExceptionUtil.getException(Exceptions.ERR_DB, ex.getMessage());
 		} finally {
 			if (ds !=null) {
 				ds.closeConnection();
@@ -100,8 +101,8 @@ public class TwitterMongoDataProvider implements Retrievable {
 
 	
 	@Override
-	public String getDescriptor() throws OpenGridException {
-		MongoDBCollection ds = new MongoDBCollection();
+	public String getDescriptor() throws ServiceException {
+		MongoDBHelper ds = new MongoDBHelper();
 		DB db = ds.getConnection();
 				
 		DBCollection c = db.getCollection(org.opengrid.constants.DB.META_COLLECTION_NAME);
@@ -118,7 +119,8 @@ public class TwitterMongoDataProvider implements Retrievable {
 				return ((DBObject)o).toString();
 			}
 		}
-		throw new OpenGridException("Cannot find dataset descriptor from meta store for dataset '" + this.getId() + "'.");
+		//wrap and bubble up
+		throw ExceptionUtil.getException(Exceptions.ERR_SERVICE, "Cannot find dataset descriptor from meta store for dataset '" + this.getId() + "'.");
 	}
 
 	
