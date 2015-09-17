@@ -19,7 +19,6 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-//TODO: mock 'online' Mongo calls
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class MetaTest {
 	
@@ -37,8 +36,7 @@ public class MetaTest {
 		OpenGridMeta meta;
 		ObjectMapper mapper = new ObjectMapper();
 		
-		//TODO: use relative path or use resource streams to make use of class path
-		meta = mapper.readValue(new File("C:/Projects/Java/CoC/Workspaces/WG2/opengridservice/src/test/resources/opengrid_meta_generic.json"), OpenGridMeta.class);
+		meta = mapper.readValue(getClass().getClassLoader().getResourceAsStream("opengrid_meta_generic.json"), OpenGridMeta.class);
 		assertTrue("Dataset count must equal 2", meta.getDatasets().size() == 2);
 	}
 }

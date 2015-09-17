@@ -14,11 +14,12 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 import org.opengrid.data.impl.GroupMongoDataProvider;
+import org.opengrid.data.impl.UserMongoDataProvider;
 
-//TODO: mock 'online' Mongo calls
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class GroupOpsTest {
 	private static List<String> groupIds = new ArrayList<String>();  
+	private static String testUserId = "";
 	
 	@BeforeClass  
 	public static void initTest() throws Exception {
@@ -30,25 +31,7 @@ public class GroupOpsTest {
 	}
 	
 	@Test
-	public void t0_DeleteGroupWithUsers()  {
-		//delete an existing group
-		GroupMongoDataProvider o = new GroupMongoDataProvider();
-		
-		//find by groupId
-		//find by groupId
-		JSONObject u = findGroup("opengrid_users");
-			
-		try {
-			o.delete(u.get("_id").toString());
-		} catch (Exception x) {
-			//should get
-			System.out.println("Delete exception is expected");
-		}
-}
-	
-	
-	@Test
-	public void t1_addGroup()  {
+	public void t0_addGroup()  {
 		GroupMongoDataProvider o = new GroupMongoDataProvider();
 		
 		JSONObject grp = makeGroup();
@@ -61,8 +44,40 @@ public class GroupOpsTest {
 		
 		assertTrue("groupId from user json object returned by addGroup does not match saved group's.", ( (String)u.get("groupId")).equals(groupIds.get(0)) );
 	}
+
+	@Test
+	public void t1_DeleteGroupWithUsers()  {
+		//add user to our test group
+		testUserId = addUser(groupIds.get(0));
+		
+		//delete an existing group
+		GroupMongoDataProvider o = new GroupMongoDataProvider();
+		
+		//find by groupId
+		//find by groupId
+		JSONObject u = findGroup(groupIds.get(0));
+			
+		try {
+			o.delete(u.get("_id").toString());
+		} catch (Exception x) {
+			//should get
+			System.out.println("Delete exception is expected");
+		}
+	}
 	
 	
+	private String addUser(String groupId)  {
+		UserMongoDataProvider o = new UserMongoDataProvider();
+		
+		JSONObject user = makeUser(groupId);
+		
+		//call upset method and force insert by not sending an id
+		o.update(null, "{ \"o\":" + user.toString() + "}");
+		return (String) user.get("userId");
+	}
+	
+	
+
 	private JSONObject makeGroup() {
 		String guid = UUID.randomUUID().toString();
 		
@@ -72,6 +87,23 @@ public class GroupOpsTest {
 		o.put("description", guid);
 		
 		groupIds.add(guid);
+		return o;
+		
+	}
+	
+	private JSONObject makeUser(String groupId) {
+		String guid = UUID.randomUUID().toString();
+		
+		JSONObject o = new JSONObject();
+		o.put("userId", guid);
+		o.put("password", guid);
+		o.put("firstName", guid);
+		o.put("lastName", guid);
+		
+		JSONArray a = new JSONArray();
+		a.put(groupId);
+		o.put("groups", a);
+		
 		return o;
 		
 	}
@@ -144,6 +176,9 @@ public class GroupOpsTest {
 	
 	@Test
 	public void t5_deleteTestGroups()  {
+		//delete test user to prevent restriction
+		deleteTestUser(testUserId);
+		
 		//delete our test groups
 		GroupMongoDataProvider o = new GroupMongoDataProvider();
 		
@@ -156,6 +191,28 @@ public class GroupOpsTest {
 		u = findGroup(groupIds.get(1));
 		o.delete(u.get("_id").toString());
 		groupIds.clear();
+	}
+	
+	private void deleteTestUser(String userId)  {
+		//delete our test users
+		UserMongoDataProvider o = new UserMongoDataProvider();
+		
+		//find by userid
+		//find by userid
+		JSONObject u = findUser(userId);
+				
+		o.delete(u.get("_id").toString());
+	}
+	
+	private JSONObject findUser(String userId) {
+		UserMongoDataProvider o = new UserMongoDataProvider();
+		
+		//find by userid
+		String s = o.getData("{\"userId\": \"" + userId + "\"}", 1, null);
+		
+		JSONArray a = new JSONArray(s);
+		JSONObject u = (JSONObject)a.get(0);
+		return u;
 	}
 	
 	
