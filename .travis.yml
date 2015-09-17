@@ -9,7 +9,7 @@ before_script:
   - sudo service mongodb start
   - "until nc -z localhost 27017; do echo Waiting for MongoDB; sleep 1; done"
   - mongo --version
-  - mongo testdb --eval 'db.createUser( { "user":"build",pwd:"test","roles":["readWrite","dbAdmin"]} );'
+  - mongo testdb --eval 'db.createUser( { "user":"build",pwd:"test","roles":[{"role":"readWrite","db":"testdb"}]});'
   #import test json data here
   - mongo testdb ./opengridservice/src/test/resources/testdata.js
 
