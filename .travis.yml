@@ -9,7 +9,7 @@ before_script:
   - sleep 15
   - mongo testdb --eval 'db.addUser("build", "test");'
   #import test json data here
-  - mongo testdb load('./opengridservice/src/test/resources/testdata.js')
+  - mongo testdb ./opengridservice/src/test/resources/testdata.js'
 
 script:
   - mvn install -DskipTests=true -f ./opengridservice/pom.xml
