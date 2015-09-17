@@ -12,7 +12,7 @@ before_script:
   - mongo testdb ./opengridservice/src/test/resources/testdata.js
 
 script:
-  - mvn install -DskipTests=true -f ./opengridservice/pom.xml
+  - mvn install -f ./opengridservice/pom.xml
 
 notifications:
   email:
