@@ -12,10 +12,9 @@ before_script:
   - mongo testdb --eval 'db.createUser( { "user":"build",pwd:"test","roles":["readWrite","dbAdmin"]} );'
   #import test json data here
   - mongo testdb ./opengridservice/src/test/resources/testdata.js
-  - mongo testdb -u 'build' -p 'test'
 
 script:
-  - mvn install -f ./opengridservice/pom.xml
+  - mvn install -DskipTests=true -f ./opengridservice/pom.xml
 
 notifications:
   email:
