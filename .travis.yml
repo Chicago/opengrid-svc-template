@@ -1,2 +1,6 @@
 language: java
-script: mvn install -DskipTests=true -f ./opengridservice/pom.xml
+sudo: required
+warnings_are_errors: true
+
+script:
+  - mvn install -DskipTests=true -f ./opengridservice/pom.xml
