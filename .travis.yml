@@ -6,8 +6,7 @@ before_script:
   - echo "deb http://repo.mongodb.org/apt/ubuntu precise/mongodb-org/3.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.0.list
   - sudo apt-get update
   - sudo apt-get install -y mongodb-org=3.0.6 mongodb-org-server=3.0.6 mongodb-org-shell=3.0.6 mongodb-org-mongos=3.0.6 mongodb-org-tools=3.0.6
-  #- sudo service mongodb start
-  - sudo mongod --auth
+  - sudo service mongodb start
   - "until nc -z localhost 27017; do echo Waiting for MongoDB; sleep 1; done"
   - mongo --version
   - mongo testdb --eval 'db.createUser( { "user":"build",pwd:"test","roles":[{"role":"readWrite","db":"testdb"}]});'
