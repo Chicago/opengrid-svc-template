@@ -2,5 +2,13 @@ language: java
 sudo: required
 warnings_are_errors: true
 
+services:
+  - mongodb
+
+before_script:
+  - sleep 15
+  - mongo testdb --eval 'db.addUser("build", "test");'
+  #import test json data here
+
 script:
   - mvn install -DskipTests=true -f ./opengridservice/pom.xml
