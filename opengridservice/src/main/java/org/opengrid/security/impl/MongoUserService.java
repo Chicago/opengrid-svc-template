@@ -152,7 +152,9 @@ public class MongoUserService implements org.springframework.security.core.userd
 
 		FindIterable<Document> docs = c.find(q);
 		Document doc = docs.first();
-		return (ArrayList) doc.get("datasets");
+		if (doc !=null && doc.get("datasets") != null)
+			return (ArrayList) doc.get("datasets");
+		return null;
 	}
 	
 
