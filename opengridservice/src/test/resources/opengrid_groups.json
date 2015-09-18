@@ -1,0 +1,19 @@
+[
+{
+  "groupId" : "opengrid_users",
+  "name" : "OpenGrid Users",
+  "description" : "Group for all OpenGrid users",
+  "enabled" : true,
+  "functions" : ["Quick Search", "Advanced Search"],
+  "datasets" : ["twitter", "weather"]
+},
+{
+  "groupId" : "opengrid_admins",
+  "name" : "OpenGrid Admins",
+  "description" : "Group for all OpenGrid system administrators",
+  "enabled" : true,
+  "functions" : ["Quick Search", "Advanced Search", "Manage"],
+  "datasets" : ["twitter", "weather"],
+  "isAdmin" : true
+}
+]

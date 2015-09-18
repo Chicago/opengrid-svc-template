@@ -13,7 +13,7 @@
     <jackson.version>2.5.4</jackson.version>
     <opengridcore.version>0.0.1-SNAPSHOT</opengridcore.version>
     <javaxservlet.version>2.5</javaxservlet.version>
-    <mongodb.version>2.12.4</mongodb.version>
+    <mongodb.version>3.0.4</mongodb.version>
     <json.version>20140107</json.version>
     <springsecurity.version>3.2.5.RELEASE</springsecurity.version>
     <jjwt.version>0.4</jjwt.version>    

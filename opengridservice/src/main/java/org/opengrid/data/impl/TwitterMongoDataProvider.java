@@ -1,20 +1,21 @@
 package org.opengrid.data.impl;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
-
+import org.bson.Document;
 import org.opengrid.constants.Exceptions;
 import org.opengrid.data.Retrievable;
 import org.opengrid.data.MongoDBHelper;
 import org.opengrid.exception.ServiceException;
 import org.opengrid.util.ExceptionUtil;
 
-import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
+import com.mongodb.client.FindIterable;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
+import com.mongodb.client.MongoDatabase;
 import com.mongodb.util.JSON;
 
 public class TwitterMongoDataProvider implements Retrievable {
@@ -22,10 +23,10 @@ public class TwitterMongoDataProvider implements Retrievable {
 	@Override
 	public String getData(String filter, int max, String sort) throws ServiceException {
 		MongoDBHelper ds = new MongoDBHelper();
-		DB db = ds.getConnection();
+		MongoDatabase db = ds.getConnection();
 				
 		try {
-			DBCollection c = db.getCollection(org.opengrid.constants.DB.DATA_COLLECTION_NAME);
+			MongoCollection<Document> c = db.getCollection(org.opengrid.constants.DB.DATA_COLLECTION_NAME);
 			
 			BasicDBObject q = new BasicDBObject();
 	    		    	
@@ -36,18 +37,19 @@ public class TwitterMongoDataProvider implements Retrievable {
 			} else
 				q = new BasicDBObject("type", new BasicDBObject("$eq", "tweet"));
 
-	    	DBCursor cur = c.find(q);
+	    	FindIterable<Document> cur = c.find(q);
+	    	MongoCursor<Document> it = cur.iterator();
 	    	
 	    	//return geoJson object as part of our mock implementation
 	    	StringBuilder sb = new StringBuilder();
 	    	sb.append("{ \"type\" : \"FeatureCollection\", \"features\" : [");
 	    	
 	    	int i=0;
-	        while(cur.hasNext()) {
+	        while(it.hasNext()) {
 	        	if (i==max)
 	        		break;
 	        	
-	        	DBObject doc = cur.next();
+	        	Document doc = it.next();
 	        	if (i > 0)
 	        		sb.append(",");
 	        	sb.append(getFeature(doc));
@@ -74,17 +76,17 @@ public class TwitterMongoDataProvider implements Retrievable {
 		}
 	}
 
-	private String getFeature(DBObject doc) {
+	private String getFeature(Document doc) {
 		String s = "{\"type\": \"Feature\", \"properties\": ";
 		
 		//discard 'type' attribute as it's for our internal use only, not part of the public schema
-		doc.removeField("type");
+		doc.remove("type");
 		
 		//convert epoch to formatted date
 		SimpleDateFormat f = new SimpleDateFormat("MM/dd/yyyy h:m a");
 		
 		doc.put("date", f.format( new Date((Long)doc.get("date"))));
-		s += doc.toString();
+		s += doc.toJson();
 		
 		String lng = doc.get("long").toString();
 		String lat = (String) doc.get("lat").toString();
@@ -103,20 +105,21 @@ public class TwitterMongoDataProvider implements Retrievable {
 	@Override
 	public String getDescriptor() throws ServiceException {
 		MongoDBHelper ds = new MongoDBHelper();
-		DB db = ds.getConnection();
+		MongoDatabase db = ds.getConnection();
 				
-		DBCollection c = db.getCollection(org.opengrid.constants.DB.META_COLLECTION_NAME);
+		MongoCollection<Document> c = db.getCollection(org.opengrid.constants.DB.META_COLLECTION_NAME);
 
 		//we only have one doc in our meta collection
-		DBObject doc = c.findOne();
-		BasicDBList a = (BasicDBList) doc.get("datasets");
+		FindIterable<Document> docs = c.find();
+		Document doc = docs.first();
+		ArrayList a = (ArrayList) doc.get("datasets");
 		
 		//loop through the dataset descriptors
 		for (Object o: a) {
-			if ( ((DBObject) o).get("id").toString().equalsIgnoreCase(this.getId()) ) {
+			if ( ((Document) o).get("id").toString().equalsIgnoreCase(this.getId()) ) {
 				
 				//this is our descriptor, return
-				return ((DBObject)o).toString();
+				return ((Document)o).toJson();
 			}
 		}
 		//wrap and bubble up

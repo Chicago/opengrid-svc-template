@@ -1,0 +1,27 @@
+[
+{
+  "date" : 1336003040000,
+  "type" : "tweet",
+  "screenName" : "BearSuqqer",
+  "text" : "@ThatsSoNuNu lol every body think that. But that's my Auntie",
+  "city" : "dha chi",
+  "bio" : "Junee 8thh. Aqee ___ . *Chicaqoo Illinois !..\r\n#TeamFollowBack ,#TeamFreaky !",
+  "lat" : 41.6786155,
+  "long" : -87.6246676,
+  "hashtags" : ""
+},
+{
+  "date" : 1422531604796,
+  "type" : "weather",
+  "temp" : 35.55,
+  "windspeed" : 4.86,
+  "condition" : "Mostly Cloudy",
+  "humidity" : 0.81,
+  "precipIntensity" : 0,
+  "zipcode" : "60632",
+  "forecast" : "Snow (13 in.) throughout the week, with temperatures falling to 18F on Wednesday.",
+  "icon" : "partly-cloudy-night",
+  "lat" : 41.811709,
+  "long" : -87.713644
+}
+]

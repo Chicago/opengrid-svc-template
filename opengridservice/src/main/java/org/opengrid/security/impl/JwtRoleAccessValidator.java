@@ -1,10 +1,13 @@
 package org.opengrid.security.impl;
 
+import java.util.ArrayList;
+
 import io.jsonwebtoken.Claims;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
+import org.bson.Document;
 import org.opengrid.constants.Exceptions;
 import org.opengrid.data.MongoDBHelper;
 import org.opengrid.security.RoleAccessValidator;
@@ -12,25 +15,25 @@ import org.opengrid.security.TokenHandler;
 import org.opengrid.util.ExceptionUtil;
 import org.opengrid.util.ServiceProperties;
 
-import com.mongodb.BasicDBList;
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import com.mongodb.DBObject;
+import com.mongodb.client.FindIterable;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
 
 public class JwtRoleAccessValidator implements RoleAccessValidator {
 	private static final Logger log = Logger.getLogger(JwtRoleAccessValidator.class);
-	private BasicDBList resourceSecurity = null;
+	private ArrayList resourceSecurity = null;
 	
-	private BasicDBList loadResourceSecurity() {
+	private ArrayList loadResourceSecurity() {
 		MongoDBHelper ds = new MongoDBHelper();
-		DB db = ds.getConnection();
+		MongoDatabase db = ds.getConnection();
 		
 		try {
-			DBCollection c = db.getCollection(org.opengrid.constants.DB.META_COLLECTION_NAME);
+			MongoCollection<Document> c = db.getCollection(org.opengrid.constants.DB.META_COLLECTION_NAME);
 
 			//we only have one doc in our meta collection
-			DBObject doc = c.findOne();
-			BasicDBList a = (BasicDBList) doc.get("resourceSecurity");
+			FindIterable<Document> docs = c.find();
+			Document doc = docs.first();
+			ArrayList a = (ArrayList) doc.get("resourceSecurity");
 			if (a == null) {
 				throw ExceptionUtil.getException(Exceptions.ERR_SERVICE, "Cannot find resourceSecurity map.");
 			}
@@ -65,13 +68,13 @@ public class JwtRoleAccessValidator implements RoleAccessValidator {
 		
 		//find the resource from our map
 		for (Object o: resourceSecurity) {
-			String urlPattern = ((DBObject) o).get("urlPattern").toString(); 			
+			String urlPattern = ((Document) o).get("urlPattern").toString(); 			
 			if ( resourcePath.matches(urlPattern) &&
-					matchesMethod( ((DBObject) o).get("httpMethod").toString(), method)
+					matchesMethod( ((Document) o).get("httpMethod").toString(), method)
 				) {
 				log.debug("urlPattern: " + urlPattern +", resourcePath=" + resourcePath + ", method: " + method);
 				//found our map
-				String requiredAuth = ((DBObject) o).get("requiredAuthorities").toString();
+				String requiredAuth = ((Document) o).get("requiredAuthorities").toString();
 				return hasAllRequiredAuth(requiredAuth, allowedList);
 			}
 		}

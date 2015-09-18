@@ -1,13 +1,15 @@
 package org.opengrid.data.impl;
 
+import java.util.ArrayList;
+
+import org.bson.Document;
 import org.opengrid.exception.ServiceException;
 
-import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
-import com.mongodb.DBObject;
+import com.mongodb.client.FindIterable;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
+import com.mongodb.client.MongoDatabase;
 import com.mongodb.util.JSON;
 
 public class UserMongoDataProvider extends UpdatableMongoDataProvider {
@@ -22,7 +24,7 @@ public class UserMongoDataProvider extends UpdatableMongoDataProvider {
 	}	
 	
 	@Override
-	public void checkDependencies(DB db, DBCollection c, DBObject doc) throws ServiceException {
+	public void checkDependencies(MongoDatabase db, MongoCollection<Document> c, Document doc) throws ServiceException {
 		//cascade the delete
 		//clean up any query with this user id
 		
@@ -30,25 +32,26 @@ public class UserMongoDataProvider extends UpdatableMongoDataProvider {
 		wipeUserQueries(db, userId);
 	}
 
-	private void wipeUserQueries(DB db, String userId) {
-		DBCollection c = db.getCollection(org.opengrid.constants.DB.QUERY_COLLECTION_NAME);
+	private void wipeUserQueries(MongoDatabase db, String userId) {
+		MongoCollection<Document> c = db.getCollection(org.opengrid.constants.DB.QUERY_COLLECTION_NAME);
 		
  		BasicDBObject q = (BasicDBObject) JSON.parse("{$or: [" +
  				"{\"owner\": \"" + userId + "\"}, " +
  				"{ \"sharedWith.users\": {$in : [\"" + userId + "\"] } }" +
  				"] }");
-    	DBCursor cur = c.find(q);
+    	FindIterable<Document> cur = c.find(q);
+    	MongoCursor<Document> it = cur.iterator(); 
     	
-        while(cur.hasNext()) {        	
-        	DBObject doc = cur.next();
+        while(it.hasNext()) {        	
+        	Document doc = it.next();
         	if ( ((String) doc.get("owner")).equals(userId) ) {
         		//delete this as we own it
-        		c.remove(doc);
+        		c.deleteOne(doc);
         	} else {
         		//userId is on the shared list, remove the user's id then update doc
         		BasicDBObject sh = (BasicDBObject) doc.get("sharedWith");
         		if (sh != null) {
-        			BasicDBList a = (BasicDBList) sh.get("users");
+        			ArrayList a = (ArrayList) sh.get("users");
             		if (a !=null) {
                 		//loop through the users
                 		for (Object o: a) {
@@ -61,7 +64,7 @@ public class UserMongoDataProvider extends UpdatableMongoDataProvider {
                 		doc.put("sharedWith", sh);
                 		
                 		BasicDBObject toUpdate = new BasicDBObject("_id", new BasicDBObject("$eq", doc.get("_id")));
-                		c.update(toUpdate, doc);
+                		c.updateOne(toUpdate, doc);
             		}
         		}
         	}        	

@@ -3,7 +3,7 @@ package org.opengrid.data.impl;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
+import org.bson.Document;
 import org.opengrid.constants.Exceptions;
 import org.opengrid.data.GenericRetrievable;
 import org.opengrid.data.MongoDBHelper;
@@ -16,12 +16,11 @@ import org.opengrid.util.ExceptionUtil;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
-import com.mongodb.DBObject;
+import com.mongodb.client.FindIterable;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
+import com.mongodb.client.MongoDatabase;
 import com.mongodb.util.JSON;
 
 public class OmniMongoDataProvider implements GenericRetrievable {
@@ -29,20 +28,16 @@ public class OmniMongoDataProvider implements GenericRetrievable {
 	@Override
 	public String getData(String dataSetId, String metaCollectionName, String filter, int max, String sort) throws ServiceException {		
 		MongoDBHelper ds = null;
-		DB db = null;
+		MongoDatabase db = null;
 				
 		try {
 			OpenGridDataset desc = this.getDescriptorInternal(metaCollectionName, dataSetId, false);
 						
 			if (desc.getDataSource() == null) {				
 				throw ExceptionUtil.getException(Exceptions.ERR_SERVICE, "Missing data source info on descriptor for dataset '" + dataSetId + "'.");
-			} else if (desc.getDataSource().getDbHostName() != null) {
+			} else if (desc.getDataSource().getDbConnectionString() != null) {
 				ds = new MongoDBHelper(
-						desc.getDataSource().getDbHostName(),
-						desc.getDataSource().getDbInstanceName(),
-						desc.getDataSource().getDbPort(),
-						desc.getDataSource().getDbUser(),
-						desc.getDataSource().getDbPassword()
+						desc.getDataSource().getDbConnectionString()
 						);
 			} else {
 				//use default DB if there's no override
@@ -50,7 +45,7 @@ public class OmniMongoDataProvider implements GenericRetrievable {
 			}
 			
 			db = ds.getConnection();
-			DBCollection c = db.getCollection(desc.getDataSource().getSourceName());
+			MongoCollection<Document> c = db.getCollection(desc.getDataSource().getSourceName());
 			
 			BasicDBObject q = new BasicDBObject();	    		    	
 			String baseFilter = desc.getDataSource().getBaseFilter(); 
@@ -69,18 +64,19 @@ public class OmniMongoDataProvider implements GenericRetrievable {
 				}				
 			}
 
-	    	DBCursor cur = c.find(q);
+	    	FindIterable<Document> cur = c.find(q);
 	    	
 	    	//return geoJson object as part of our mock implementation
 	    	StringBuilder sb = new StringBuilder();
 	    	sb.append("{ \"type\" : \"FeatureCollection\", \"features\" : [");
 	    	
+	    	MongoCursor<Document> it = cur.iterator();
 	    	int i=0;
-	        while(cur.hasNext()) {
+	        while(it.hasNext()) {
 	        	if (i==max)
 	        		break;
 	        	
-	        	DBObject doc = cur.next();
+	        	Document doc = it.next();
 	        	if (i > 0)
 	        		sb.append(",");
 	        	sb.append(getFeature(doc, desc));
@@ -108,10 +104,10 @@ public class OmniMongoDataProvider implements GenericRetrievable {
 	}
 
 	
-	private String getFeature(DBObject sourceDoc, OpenGridDataset desc) {
+	private String getFeature(Document doc2, OpenGridDataset desc) {
 		String s = "{\"type\": \"Feature\", \"properties\": ";
 		
-		DBObject doc = new BasicDBObject();
+		Document doc = new Document();
 		//iterate through available columns and build JSON		
 		for (OpenGridColumn c: desc.getColumns()) {
 			
@@ -119,9 +115,9 @@ public class OmniMongoDataProvider implements GenericRetrievable {
 			if (c.getDataSource() == null) {
 				c.setDataSource(c.getId());
 			}
-			DBObject o = resolveObject(sourceDoc, c.getDataSource());
+			Document o = resolveObject(doc2, c.getDataSource());
 			String colName = resolveName(c.getDataSource());
-			if ( o.containsField(colName) ) {
+			if ( o.containsKey(colName) ) {
 				if (c.getDataType().equals("date")) {
 					//format date to string
 					
@@ -134,7 +130,7 @@ public class OmniMongoDataProvider implements GenericRetrievable {
 				}
 			}
 		}
-		s += doc.toString();
+		s += doc.toJson();
 		
 		//build the coordinates in the geometry
 		String lng = doc.get( desc.getOptions().getLong() ).toString();
@@ -154,13 +150,13 @@ public class OmniMongoDataProvider implements GenericRetrievable {
 	}
 
 
-	public DBObject resolveObject(DBObject sourceDoc, String dataSource) {
+	public Document resolveObject(Document doc2, String dataSource) {
 		String[] s = dataSource.split("\\.");
 
-		DBObject o = sourceDoc;
+		Document o = doc2;
 		if (s.length > 1) {
 			for (String c: s) {
-				o = (DBObject) o.get(c); 
+				o = (Document) o.get(c); 
 			}			
 		}
 		return o;
@@ -187,17 +183,18 @@ public class OmniMongoDataProvider implements GenericRetrievable {
 		MongoDBHelper ds = new MongoDBHelper();
 				
 		try {
-			DB db = ds.getConnection();
+			MongoDatabase db = ds.getConnection();
 			
-			DBCollection c = db.getCollection(metaCollectionName);
+			MongoCollection<Document> c = db.getCollection(metaCollectionName);
 
 			//we only have one doc in our meta collection
-			DBObject doc = c.findOne();
+			FindIterable<Document> docs = c.find();
+			Document doc = docs.first();
 			
-			if (doc==null || !doc.containsField("datasets"))
+			if (doc==null || !doc.containsKey("datasets"))
 				throw new ServiceException("Cannot find 'datasets' document from collection '" + metaCollectionName + "'.");
 			
-			OpenGridMeta meta = (new ObjectMapper()).readValue(doc.toString(), OpenGridMeta.class);
+			OpenGridMeta meta = (new ObjectMapper()).readValue(doc.toJson(), OpenGridMeta.class);
 			OpenGridDataset desc = meta.getDataset(dataSetId);
 			
 			if (removePrivates) {

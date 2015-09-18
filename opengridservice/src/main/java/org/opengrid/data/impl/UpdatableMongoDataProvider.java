@@ -1,5 +1,6 @@
 package org.opengrid.data.impl;
 
+import org.bson.Document;
 import org.opengrid.constants.Exceptions;
 import org.opengrid.data.Retrievable;
 import org.opengrid.data.MongoDBHelper;
@@ -12,6 +13,10 @@ import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
+import com.mongodb.client.FindIterable;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
+import com.mongodb.client.MongoDatabase;
 import com.mongodb.util.JSON;
 
 
@@ -30,10 +35,10 @@ public class UpdatableMongoDataProvider implements Retrievable, Updatable {
 	public String getData(String filter, int max, String sort) throws ServiceException {
 		//data is plain json (we'll need to standardize format across the board later)
 		MongoDBHelper ds = new MongoDBHelper();
-		DB db = ds.getConnection();
+		MongoDatabase db = ds.getConnection();
 				
 		try {
-			DBCollection c = db.getCollection(this.collectionName);
+			MongoCollection<Document> c = db.getCollection(this.collectionName);
 			
 			BasicDBObject q = null;
 	    		    	
@@ -42,20 +47,21 @@ public class UpdatableMongoDataProvider implements Retrievable, Updatable {
 			} else {
 				q = (BasicDBObject) JSON.parse("{}"); //no filter
 			}
-	    	DBCursor cur = c.find(q);
+	    	FindIterable<Document> cur = c.find(q);
+	    	MongoCursor<Document> it = cur.iterator();
 	    	
 	    	//return regular json object, not geoJson
 	    	StringBuilder sb = new StringBuilder();
 	    	sb.append("[");
 	    	int i=0;
-	        while(cur.hasNext()) {
+	        while(it.hasNext()) {
 	        	if (i==max)
 	        		break;
 	        	
-	        	DBObject doc = cur.next();
+	        	Document doc = it.next();
 	        	if (i > 0)
 	        		sb.append(",");
-	        	sb.append(doc.toString());
+	        	sb.append(doc.toJson());
 	        	i++;
 	        }
 	        sb.append("]");
@@ -94,18 +100,18 @@ public class UpdatableMongoDataProvider implements Retrievable, Updatable {
 	//entity => {id:<id>, o:<object>}
 	private String updateObject(String id, String entity) throws ServiceException  {
 		MongoDBHelper ds = new MongoDBHelper();
-		DB db = ds.getConnection();
+		MongoDatabase db = ds.getConnection();
 				
 		try {
-			DBCollection c = db.getCollection(this.collectionName);
+			MongoCollection<Document> c = db.getCollection(this.collectionName);
 			BasicDBObject q = (BasicDBObject) JSON.parse("{\"_id\": {\"$eq\": " + id + "}}");
-			BasicDBObject d = (BasicDBObject) JSON.parse(entity);
-			
-			DBObject doc = (DBObject) (d.get("o"));
-			c.update(q, doc);
+			Document d = Document.parse(entity);
+						
+			Document doc = d.get("o", Document.class);
+			c.replaceOne(q, doc);
 			
 			//return object on success, to be consistent with add method
-			return doc.toString();
+			return doc.toJson();
 			
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -123,17 +129,17 @@ public class UpdatableMongoDataProvider implements Retrievable, Updatable {
 	//entity => {id:<id>, o:<object>}
 	private String addNewObject(String entity) throws ServiceException  {
 		MongoDBHelper ds = new MongoDBHelper();
-		DB db = ds.getConnection();
+		MongoDatabase db = ds.getConnection();
 				
 		try {
-			DBCollection c = db.getCollection(this.collectionName);
-			BasicDBObject o = (BasicDBObject) JSON.parse(entity);
+			MongoCollection<Document> c = db.getCollection(this.collectionName);
+			Document o = Document.parse(entity);
 			
-			DBObject doc = (DBObject) (o.get("o")); 			
-			c.insert(doc);
+			Document doc = o.get("o", Document.class); 			
+			c.insertOne(doc);
 			
 			//return object with _id already populated
-			return doc.toString();
+			return doc.toJson();
 			
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -151,19 +157,20 @@ public class UpdatableMongoDataProvider implements Retrievable, Updatable {
 	public void delete(String id) throws ServiceException {
 		
 		MongoDBHelper ds = new MongoDBHelper();
-		DB db = ds.getConnection();
+		MongoDatabase db = ds.getConnection();
 				
 		try {
-			DBCollection c = db.getCollection(this.collectionName);
+			MongoCollection<Document> c = db.getCollection(this.collectionName);
 			String filter = "{\"_id\": {\"$eq\": " + id + "}}";
 			BasicDBObject q = (BasicDBObject) JSON.parse(filter);			
-			DBObject doc = c.findOne(q);
+			FindIterable<Document> docs = c.find(q);
+			Document doc = docs.first();
 			
 			if (doc == null) {
 				throw ExceptionUtil.getException(Exceptions.ERR_SERVICE, "No object exists with id '" + id + "'");
 			}
 			checkDependencies(db, c, doc);
-			c.remove(doc);			
+			c.deleteOne(doc);			
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			
@@ -176,7 +183,7 @@ public class UpdatableMongoDataProvider implements Retrievable, Updatable {
 		}		
 	}
 	
-	public void checkDependencies(DB db, DBCollection c, DBObject doc) throws ServiceException {
+	public void checkDependencies(MongoDatabase db, MongoCollection<Document> c, Document doc) throws ServiceException {
 		//do nothing, defer to inherited classes if any checks need to be made
 	}
 }

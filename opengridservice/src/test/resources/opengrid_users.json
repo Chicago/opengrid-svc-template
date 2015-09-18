@@ -1,0 +1,8 @@
+{
+  "_id" : ObjectId("55ccaca15fc6c6bf8a807cf2"),
+  "userId" : "twitterUser",
+  "password" : "password1",
+  "firstName" : "Twitter",
+  "lastName" : "User",
+  "groups" : ["opengrid_users"]
+}

@@ -6,25 +6,23 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.opengrid.constants.Exceptions;
+import org.bson.Document;
 import org.opengrid.data.MongoDBHelper;
 import org.opengrid.security.OpenGridUserRole;
-import org.opengrid.util.ExceptionUtil;
 import org.springframework.security.authentication.AccountStatusUserDetailsChecker;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
-import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
-import com.mongodb.DBObject;
+import com.mongodb.client.FindIterable;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
+import com.mongodb.client.MongoDatabase;
 
 public class MongoUserService implements org.springframework.security.core.userdetails.UserDetailsService {
 	private static final Logger log = Logger.getLogger(MongoUserService.class);
 	 
     private final AccountStatusUserDetailsChecker detailsChecker = new AccountStatusUserDetailsChecker();
-    private List<DBObject> allGroups = null;
+    private List<Document> allGroups = null;
  
     @Override
     public final User loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -40,13 +38,14 @@ public class MongoUserService implements org.springframework.security.core.userd
     	MongoDBHelper ds = new MongoDBHelper();
 		
  		try {
- 			DB db = ds.getConnection();
- 			DBCollection c = db.getCollection(org.opengrid.constants.DB.USERS_COLLECTION_NAME);
+ 			MongoDatabase db = ds.getConnection();
+ 			MongoCollection<Document> c = db.getCollection(org.opengrid.constants.DB.USERS_COLLECTION_NAME);
  			
  			BasicDBObject q = new BasicDBObject();
  			q = new BasicDBObject("userId", new BasicDBObject("$eq", username));
 
- 			DBObject doc = c.findOne(q);
+ 			FindIterable<Document> docs = c.find(q);
+ 			Document doc = docs.first();
  			if (doc == null) {
  				return null;
  			} else {
@@ -60,7 +59,7 @@ public class MongoUserService implements org.springframework.security.core.userd
  		    	
  		    	//read roles/groups
  		    	//roles 
- 		    	getRoles(u, (BasicDBList) doc.get("groups"), db);
+ 		    	getRoles(u, (ArrayList) doc.get("groups"), db);
  		    	
  		    	//read subscriptions later
  		    	return u;			
@@ -73,13 +72,13 @@ public class MongoUserService implements org.springframework.security.core.userd
 	}
     
     
-    private void getRoles(User u, BasicDBList roles, DB db) {
+    private void getRoles(User u, ArrayList arrayList, MongoDatabase db) {
     	Map<String, String> res = new HashMap<String, String>(); 
-    	for(Object o : roles) {
+    	for(Object o : arrayList) {
     		u.grantRole(new OpenGridUserRole( org.opengrid.constants.Security.AUTH_PREFIX_GROUP + (String) o));
 		  		  
     		//we need to get all resources accessible to this group
-    		BasicDBList a = getGroupResources(db, (String) o);
+    		ArrayList a = getGroupResources(db, (String) o);
     		if (a !=null) {
     			for(Object s : a) {    	    		
     	    		if (!res.containsKey(s)) {
@@ -111,7 +110,7 @@ public class MongoUserService implements org.springframework.security.core.userd
 			allGroups = loadGroups();			
 		//}
 		
-		for (DBObject o: allGroups) {
+		for (Document o: allGroups) {
 			if ( ( (String) o.get("groupId")).equals(groupName)) {
 				boolean b = false;
 				if (o.get("isAdmin") != null) {
@@ -124,17 +123,18 @@ public class MongoUserService implements org.springframework.security.core.userd
 	}
 
 	
-	private List<DBObject> loadGroups() {
-		List<DBObject> l = new ArrayList<DBObject>();
+	private List<Document> loadGroups() {
+		List<Document> l = new ArrayList<Document>();
 	
 		MongoDBHelper ds = new MongoDBHelper();
-		DB db = ds.getConnection();
+		MongoDatabase db = ds.getConnection();
 		
 		try {
-			DBCollection c = db.getCollection(org.opengrid.constants.DB.GROUPS_COLLECTION_NAME);
-			DBCursor cur = c.find();
-	        while(cur.hasNext()) {
-	        	l.add( (DBObject)cur.next());			
+			MongoCollection<Document> c = db.getCollection(org.opengrid.constants.DB.GROUPS_COLLECTION_NAME);
+			FindIterable<Document> cur = c.find();
+			MongoCursor<Document> it = cur.iterator();
+	        while(it.hasNext()) {
+	        	l.add(it.next());			
 	        }
 		} finally {
 			if (ds !=null) {
@@ -145,13 +145,14 @@ public class MongoUserService implements org.springframework.security.core.userd
 	}
 	
 
-	private BasicDBList getGroupResources(DB db, String groupId) {
-		DBCollection c = db.getCollection(org.opengrid.constants.DB.GROUPS_COLLECTION_NAME);
+	private ArrayList getGroupResources(MongoDatabase db, String groupId) {
+		MongoCollection<Document> c = db.getCollection(org.opengrid.constants.DB.GROUPS_COLLECTION_NAME);
 		BasicDBObject q = new BasicDBObject();
 		q = new BasicDBObject("groupId", new BasicDBObject("$eq", groupId));
 
-		DBObject doc = c.findOne(q);
-		return (BasicDBList) doc.get("datasets");
+		FindIterable<Document> docs = c.find(q);
+		Document doc = docs.first();
+		return (ArrayList) doc.get("datasets");
 	}
 	
 
