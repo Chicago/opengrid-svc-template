@@ -15,3 +15,8 @@ before_script:
 
 script:
   - mvn install -f ./opengridservice/pom.xml
+
+notifications:
+  email:
+    on_success: change
+    on_failure: change
