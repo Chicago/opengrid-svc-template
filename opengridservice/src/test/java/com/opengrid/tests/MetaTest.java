@@ -31,7 +31,7 @@ public class MetaTest {
 	public static void cleanupTest() {
 	}
 	
-	//@Test
+	@Test
 	public void t1_ReadMeta() throws JsonParseException, JsonMappingException, IOException  {
 		OpenGridMeta meta;
 		ObjectMapper mapper = new ObjectMapper();
