@@ -32,7 +32,7 @@ public class OmniSearchTest {
 	public static void cleanupTest() {
 	}
 	
-	//@Test
+	@Test
 	public void t1_Search() {
 		
 		GenericRetrievable gr = new OmniMongoDataProvider();
