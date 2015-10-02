@@ -68,5 +68,42 @@ public class OmniSearchTest {
 		System.out.println(rs);
 		assertTrue("Result cannot be null", rs !=null);
 	}
+	
+	//@Test
+	public void t2_SearchWithBadDatasetID() {
+		GenericRetrievable gr = new OmniMongoDataProvider();
+		try {
+			gr.getData("badds", 
+					"opengrid_meta", 
+					"{}", //filter
+					20,
+					null);
+			assertTrue("An exception on bad dataset id is expected", false);
+		} catch (Exception ex) {
+			assertTrue("Unexpected exception message on bad dataset ID", ex.getMessage().indexOf("Cannot find dataset descriptor") > -1);
+		}
+	}
+	
+	//@Test
+	public void t3_TwiterSimpleSearch() {
+		GenericRetrievable gr = new OmniMongoDataProvider();
+		String rs = gr.getData("twitter", 
+				"opengrid_meta", 
+				"{\"$and\":[{\"text\":{\"$regex\":\"coupon\"}}]}", //filter
+				20,
+				null);		
+		assertTrue("result set is returned with no error", !rs.isEmpty());
+	}
+	
+	@Test
+	public void t4_TwiterSimpleSearch2() {
+		GenericRetrievable gr = new OmniMongoDataProvider();
+		String rs = gr.getData("business_licenses", 
+				"opengrid_meta", 
+				"{\"$and\":[{\"what.account_number\":{\"$eq\":\"329961\"}}]}", //filter
+				20,
+				null);		
+		assertTrue("result set is returned with no error", !rs.isEmpty());
+	}
 }
 

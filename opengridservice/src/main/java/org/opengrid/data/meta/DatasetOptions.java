@@ -5,6 +5,12 @@ public class DatasetOptions {
 	
 	//comma-delimited string of column names designating what columns to use for Latitude and Longitude
 	private String latLong; 
+	
+	//property that represents creation timestamp of document
+	private String creationTimestamp;
+	
+	//property to contain default sort info
+	private String defaultSort;
 
 	public Rendition getRendition() {
 		return rendition;
@@ -29,5 +35,21 @@ public class DatasetOptions {
 	
 	public String getLong() {
 		return (this.latLong == null) ? "long" : this.latLong.split(",")[1];
+	}
+
+	public String getCreationTimestamp() {
+		return creationTimestamp;
+	}
+
+	public void setCreationTimestamp(String creationTimestamp) {
+		this.creationTimestamp = creationTimestamp;
+	}
+
+	public String getDefaultSort() {
+		return defaultSort;
+	}
+
+	public void setDefaultSort(String defaultSort) {
+		this.defaultSort = defaultSort;
 	}
 }

@@ -2,7 +2,10 @@ package org.opengrid.data.impl;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+
 import org.bson.Document;
 import org.opengrid.constants.Exceptions;
 import org.opengrid.data.GenericRetrievable;
@@ -66,11 +69,25 @@ public class OmniMongoDataProvider implements GenericRetrievable {
 
 	    	FindIterable<Document> cur = c.find(q);
 	    	
+	    	//determine sort order
+	    	BasicDBObject orderBy = null;
+	    	if (sort !=null && sort.length() > 0) {
+	    		//from client
+	    		orderBy = (BasicDBObject) JSON.parse(sort);	    		
+	    	} else if (desc.getOptions().getDefaultSort()!=null && desc.getOptions().getDefaultSort().length() > 0) {
+	    		//from dataset descriptor
+	    		orderBy = (BasicDBObject) JSON.parse(desc.getOptions().getDefaultSort());
+	    	}
+	    	if (orderBy !=null) {
+	    		cur.sort(orderBy);
+	    	}
+	    	
 	    	//return geoJson object as part of our mock implementation
 	    	StringBuilder sb = new StringBuilder();
 	    	sb.append("{ \"type\" : \"FeatureCollection\", \"features\" : [");
 	    	
-	    	MongoCursor<Document> it = cur.iterator();
+	    	MongoCursor<Document> it = cur.iterator();	    	 
+	    	
 	    	int i=0;
 	        while(it.hasNext()) {
 	        	if (i==max)
@@ -105,26 +122,28 @@ public class OmniMongoDataProvider implements GenericRetrievable {
 
 	
 	private String getFeature(Document doc2, OpenGridDataset desc) {
+
 		String s = "{\"type\": \"Feature\", \"properties\": ";
 		
 		Document doc = new Document();
 		//iterate through available columns and build JSON		
 		for (OpenGridColumn c: desc.getColumns()) {
 			
-			//support dotNotation on the source column names
-			if (c.getDataSource() == null) {
-				c.setDataSource(c.getId());
-			}
-			Document o = resolveObject(doc2, c.getDataSource());
-			String colName = resolveName(c.getDataSource());
+			//support dotNotation on the id
+			//if (c.getDataSource() == null) {
+			//	c.setDataSource(c.getId());
+			//}
+			Document o = resolveObject(doc2, c.getId());
+			String colName = resolveName(c.getId());
 			if ( o.containsKey(colName) ) {
 				if (c.getDataType().equals("date")) {
 					//format date to string
 					
 					//convert epoch to formatted date
-					SimpleDateFormat f = new SimpleDateFormat("MM/dd/yyyy h:m a");
+					//SimpleDateFormat f = new SimpleDateFormat("MM/dd/yyyy h:m a");
+					SimpleDateFormat f = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss aa");
 				
-					doc.put(c.getDataSource(), f.format( new Date((Long) o.get(colName))) );
+					doc.put(c.getId(), f.format( new Date((Long) o.get(colName))) );
 				} else {
 					doc.put(c.getId(), o.get(colName));					
 				}
@@ -133,7 +152,21 @@ public class OmniMongoDataProvider implements GenericRetrievable {
 		s += doc.toJson();
 		
 		//build the coordinates in the geometry
+		//lat long are required attributes
+		if (!doc.containsKey(desc.getOptions().getLong())) {
+			//default longitude value
+			doc.put(desc.getOptions().getLong(), -1);
+			//throw ExceptionUtil.getException(Exceptions.ERR_SERVICE, "Data is missing required '" +  desc.getOptions().getLong() + "' attribute for document " + doc.toJson());
+		}
+		
 		String lng = doc.get( desc.getOptions().getLong() ).toString();
+		
+		if (!doc.containsKey(desc.getOptions().getLat())) {
+			//throw ExceptionUtil.getException(Exceptions.ERR_SERVICE, "Data is missing required '" +  desc.getOptions().getLat() + "' attribute for document " + doc.toJson());
+			//default latitude value
+			doc.put(desc.getOptions().getLat(), -1);
+		}
+
 		String lat = doc.get (desc.getOptions().getLat() ).toString();
 		
 		s +=", \"geometry\": {\"type\": \"Point\", \"coordinates\": [" + lng + "," + lat + "]}, \"autoPopup\": false }";
@@ -149,14 +182,17 @@ public class OmniMongoDataProvider implements GenericRetrievable {
 			return dataSource;
 	}
 
-
+	//get Document that owns the field
 	public Document resolveObject(Document doc2, String dataSource) {
 		String[] s = dataSource.split("\\.");
 
 		Document o = doc2;
 		if (s.length > 1) {
 			for (String c: s) {
-				o = (Document) o.get(c); 
+				if (o.get(c) instanceof Document)				
+					o = (Document) o.get(c);
+				else
+					break;
 			}			
 		}
 		return o;
@@ -205,6 +241,35 @@ public class OmniMongoDataProvider implements GenericRetrievable {
 			if (desc == null)
 				throw new ServiceException("Cannot find dataset descriptor from meta store for dataset '" + dataSetId + "'.");
 			return desc;
+		} finally {
+			ds.closeConnection();
+		}
+	}
+
+
+	@Override
+	public List<String> getAllDatasetIds(String metaCollectionName)
+			throws ServiceException, JsonParseException, JsonMappingException, IOException {
+		MongoDBHelper ds = new MongoDBHelper();
+		List<String> a = new ArrayList<String>();
+		
+		try {
+			MongoDatabase db = ds.getConnection();
+			
+			MongoCollection<Document> c = db.getCollection(metaCollectionName);
+
+			//we only have one doc in our meta collection
+			FindIterable<Document> docs = c.find();
+			Document doc = docs.first();
+			
+			if (doc==null || !doc.containsKey("datasets"))
+				throw new ServiceException("Cannot find 'datasets' document from collection '" + metaCollectionName + "'.");
+			
+			OpenGridMeta meta = (new ObjectMapper()).readValue(doc.toJson(), OpenGridMeta.class);
+			for (OpenGridDataset o: meta.getDatasets()) {
+				a.add(o.getId());
+			}			
+			return a;
 		} finally {
 			ds.closeConnection();
 		}

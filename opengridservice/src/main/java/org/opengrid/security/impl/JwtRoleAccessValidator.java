@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.log4j.Logger;
 import org.bson.Document;
 import org.opengrid.constants.Exceptions;
+import org.opengrid.constants.Security;
 import org.opengrid.data.MongoDBHelper;
 import org.opengrid.security.RoleAccessValidator;
 import org.opengrid.security.TokenHandler;
@@ -64,6 +65,11 @@ public class JwtRoleAccessValidator implements RoleAccessValidator {
 		if (resourceSecurity == null) {
 			//lazy-load access matrix and additional info from Mongo
 			resourceSecurity = loadResourceSecurity();			
+		}
+		
+		//admin has access to all resources 
+		if (hasAllRequiredAuth(Security.ADMIN_AUTH, allowedList)) {
+			return true;
 		}
 		
 		//find the resource from our map

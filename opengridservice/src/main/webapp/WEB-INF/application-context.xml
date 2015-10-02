@@ -48,6 +48,7 @@
 	<bean id="userDataUpdater" class="org.opengrid.data.impl.UserMongoDataProvider"/>
 	<bean id="groupDataProvider" class="org.opengrid.data.impl.GroupMongoDataProvider"/>
 	<bean id="groupDataUpdater" class="org.opengrid.data.impl.GroupMongoDataProvider"/>
+	<bean id="omniDataProvider" class="org.opengrid.data.impl.OmniMongoDataProvider"/>
 	
 	<!-- security beans  -->
 	<bean id="authManager" class="org.opengrid.security.impl.DBAuthenticationProvider"/>

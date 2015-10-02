@@ -39,6 +39,10 @@ public class TwitterMongoDataProvider implements Retrievable {
 
 	    	FindIterable<Document> cur = c.find(q);
 	    	MongoCursor<Document> it = cur.iterator();
+	    	if (sort !=null && sort.length() > 0) {
+	    		BasicDBObject orderBy = (BasicDBObject) JSON.parse(sort);
+	    		cur.sort(orderBy);
+	    	}
 	    	
 	    	//return geoJson object as part of our mock implementation
 	    	StringBuilder sb = new StringBuilder();

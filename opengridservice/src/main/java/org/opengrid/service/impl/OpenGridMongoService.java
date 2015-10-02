@@ -1,11 +1,16 @@
 package org.opengrid.service.impl;
 
+import java.io.IOException;
+import java.util.List;
+
 import io.jsonwebtoken.Claims;
 
 import org.apache.cxf.jaxrs.ext.MessageContext;
 import org.opengrid.constants.Exceptions;
+import org.opengrid.data.GenericRetrievable;
 import org.opengrid.data.Retrievable;
 import org.opengrid.data.Updatable;
+import org.opengrid.exception.ServiceException;
 import org.opengrid.security.RoleAccessValidator;
 import org.opengrid.security.TokenAuthenticationService;
 import org.opengrid.security.TokenHandler;
@@ -17,9 +22,15 @@ import javax.annotation.Resource;
 
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+
 @Component("OpenGridServiceBean")
 public class OpenGridMongoService implements OpenGridService {
-
+	
+	@Resource(name="omniDataProvider")
+	private GenericRetrievable omniDataProvider;
+		
 	@Resource(name="twitterDataProvider")
 	private Retrievable twitterDataProvider;
 	
@@ -83,35 +94,25 @@ public class OpenGridMongoService implements OpenGridService {
 
 	@Override
 	public String executeOpenGridQueryWithParams(String datasetId, String filter, int max, String sort) {
-		//implement a generic data provider later or a provider factory
-		if (datasetId.equalsIgnoreCase(org.opengrid.constants.DataTypes.TWITTER)) {
-			return twitterDataProvider.getData(filter, max, sort);
-			
-		} else if (datasetId.equalsIgnoreCase(org.opengrid.constants.DataTypes.WEATHER)) {				
-			return weatherDataProvider.getData(filter, max, sort);
-			
-		} else {
-			throw ExceptionUtil.getException(Exceptions.ERR_SERVICE, "Dataset " + datasetId + " is not supported.");
-		}
+		return omniDataProvider.getData(
+				datasetId,
+				ServiceProperties.getProperties().getStringProperty("mongo.metaCollectionName"), 
+				filter, 
+				max,
+				sort);
 	}
 
 
 	@Override
-	public String getOpenGridDataset(String datasetId) {
-		//implement a generic data provider later or a provider factory
-		if (datasetId.equalsIgnoreCase(org.opengrid.constants.DataTypes.TWITTER)) {
-			return twitterDataProvider.getDescriptor();
-			
-		} else if (datasetId.equalsIgnoreCase(org.opengrid.constants.DataTypes.WEATHER)) {				
-			return weatherDataProvider.getDescriptor();				
-		} else {
-			throw ExceptionUtil.getException(Exceptions.ERR_SERVICE, "Dataset " + datasetId + " is not supported.");
-		}
+	public String getOpenGridDataset(String datasetId) throws JsonParseException, JsonMappingException, ServiceException, IOException {
+		return omniDataProvider.getDescriptor(
+				ServiceProperties.getProperties().getStringProperty("mongo.metaCollectionName"),
+				datasetId).toString();
 	}
 
 
 	@Override
-	public String getOpenGridDatasetList(MessageContext mc) {
+	public String getOpenGridDatasetList(MessageContext mc) throws JsonParseException, JsonMappingException, ServiceException, IOException {
 		String key = ServiceProperties.getProperties().getStringProperty("auth.key");
 		tokenAuthService.setKey(key);
 		String token = tokenAuthService.getToken(mc.getHttpServletRequest());
@@ -120,15 +121,16 @@ public class OpenGridMongoService implements OpenGridService {
 		h.setSecret(key);
 		Claims c = h.getClaims(token);
 		String descriptors = "";
-				
-		if (roleAccessValidator.lookupAccessMap("/rest/datasets/twitter", "GET", (String) c.get("resources"))) {
-			descriptors += twitterDataProvider.getDescriptor();
-		}
 		
-		if (roleAccessValidator.lookupAccessMap("/rest/datasets/weather", "GET", (String) c.get("resources"))) {
-			if (!descriptors.isEmpty())
-				descriptors += ", ";
-			descriptors += weatherDataProvider.getDescriptor();
+		List<String> ds = omniDataProvider.getAllDatasetIds(
+				ServiceProperties.getProperties().getStringProperty("mongo.metaCollectionName")
+		);
+		for (String s: ds) {
+			if (roleAccessValidator.lookupAccessMap("/rest/datasets/" + s, "GET", (String) c.get("resources"))) {
+				if (!descriptors.isEmpty())
+					descriptors += ", ";
+				descriptors += this.getOpenGridDataset(s);
+			}			
 		}
 				
 		return "[" + descriptors + "]";

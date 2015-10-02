@@ -2,9 +2,10 @@ package org.opengrid.data.meta;
 
 public class QuickSearch {
 	private boolean enable;
-	private String matchingRegex;
-	private String validationRegEx;
-	private String validationErrorMessage;
+	private String triggerWord;
+	private String triggerAlias;
+	private Integer defaultMax;
+	private String defaultSort;
 	
 	public boolean isEnable() {
 		return enable;
@@ -13,29 +14,37 @@ public class QuickSearch {
 	public void setEnable(boolean enable) {
 		this.enable = enable;
 	}
-	
-	public String getMatchingRegex() {
-		return matchingRegex;
+
+	public String getTriggerWord() {
+		return triggerWord;
 	}
-	
-	public void setMatchingRegex(String matchingRegex) {
-		this.matchingRegex = matchingRegex;
+
+	public void setTriggerWord(String triggerWord) {
+		this.triggerWord = triggerWord;
 	}
-	
-	public String getValidationRegEx() {
-		return validationRegEx;
+
+	public String getTriggerAlias() {
+		return triggerAlias;
 	}
-	
-	public void setValidationRegEx(String validationRegEx) {
-		this.validationRegEx = validationRegEx;
+
+	public void setTriggerAlias(String triggerAlias) {
+		this.triggerAlias = triggerAlias;
 	}
-	
-	public String getValidationErrorMessage() {
-		return validationErrorMessage;
+
+	public Integer getDefaultMax() {
+		return defaultMax;
 	}
-	
-	public void setValidationErrorMessage(String validationErrorMessage) {
-		this.validationErrorMessage = validationErrorMessage;
-	}	
-	
+
+	public void setDefaultMax(Integer defaultMax) {
+		this.defaultMax = defaultMax;
+	}
+
+	public String getDefaultSort() {
+		return defaultSort;
+	}
+
+	public void setDefaultSort(String defaultSort) {
+		this.defaultSort = defaultSort;
+	}
+		
 }

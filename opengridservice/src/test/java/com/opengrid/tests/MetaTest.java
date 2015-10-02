@@ -31,13 +31,28 @@ public class MetaTest {
 	public static void cleanupTest() {
 	}
 	
-	@Test
+	//@Test
 	public void t1_ReadMeta() throws JsonParseException, JsonMappingException, IOException  {
 		OpenGridMeta meta;
 		ObjectMapper mapper = new ObjectMapper();
 		
 		meta = mapper.readValue(getClass().getClassLoader().getResourceAsStream("opengrid_meta_generic.json"), OpenGridMeta.class);
 		assertTrue("Dataset count must equal 2", meta.getDatasets().size() == 2);
+	}
+	
+	@Test
+	public void t1_foo() {
+		Double d = 1336003040000.00;
+		long d2 = 1336003040000L;
+		
+		Object o = d;
+		//Object o = d2;
+		
+		Long l = null;
+		if (o instanceof Double)			
+			l = ((Double) o).longValue();
+		else
+			l = (Long) o;
 	}
 }
 

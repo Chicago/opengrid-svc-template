@@ -1,9 +1,15 @@
 package org.opengrid.service;
 
+import java.io.IOException;
+
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 
 import org.apache.cxf.jaxrs.ext.MessageContext;
+import org.opengrid.exception.ServiceException;
+
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 
 @Path("/")
 public interface OpenGridService {
@@ -23,14 +29,14 @@ public interface OpenGridService {
 	@GET 
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/datasets")
-	public String getOpenGridDatasetList(@Context MessageContext mc);
+	public String getOpenGridDatasetList(@Context MessageContext mc) throws JsonParseException, JsonMappingException, ServiceException, IOException;
 
 	
 	//returns descriptor for a specific dataset
 	@GET 
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/datasets/{datasetId}")
-	public String getOpenGridDataset(@PathParam("datasetId") final String datasetId);
+	public String getOpenGridDataset(@PathParam("datasetId") final String datasetId) throws JsonParseException, JsonMappingException, ServiceException, IOException;
 	
 	
 		
