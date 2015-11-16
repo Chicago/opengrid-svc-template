@@ -143,7 +143,8 @@ public class OmniMongoDataProvider implements GenericRetrievable {
 					//SimpleDateFormat f = new SimpleDateFormat("MM/dd/yyyy h:m a");
 					SimpleDateFormat f = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss aa");
 				
-					doc.put(c.getId(), f.format( new Date((Long) o.get(colName))) );
+					//doc.put(c.getId(), f.format( new Date((Long) o.get(colName))) );
+					doc.put(c.getId(), f.format( new Date(getDateLong(o.get(colName))) ));
 				} else {
 					doc.put(c.getId(), o.get(colName));					
 				}
@@ -173,6 +174,19 @@ public class OmniMongoDataProvider implements GenericRetrievable {
 		return s;		
 	}
 	
+	private Long getDateLong(Object value) {
+		if (value !=null) {
+			if (value instanceof Double) {
+				return ( (Double)value).longValue();
+			} else if (value instanceof Long) {
+				return (Long) value;
+			} else 
+				throw new ServiceException("Unsupported data type for date value");
+			
+		} else {
+			return (new Long(-1));
+		}
+	}
 	
 	public String resolveName(String dataSource) {
 		String[] s = dataSource.split("\\.");
