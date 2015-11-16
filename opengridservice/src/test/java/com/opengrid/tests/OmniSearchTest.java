@@ -32,7 +32,7 @@ public class OmniSearchTest {
 	public static void cleanupTest() {
 	}
 	
-	//@Test
+	@Test
 	public void t1_Search() {
 		
 		GenericRetrievable gr = new OmniMongoDataProvider();
@@ -69,7 +69,7 @@ public class OmniSearchTest {
 		assertTrue("Result cannot be null", rs !=null);
 	}
 	
-	//@Test
+	@Test
 	public void t2_SearchWithBadDatasetID() {
 		GenericRetrievable gr = new OmniMongoDataProvider();
 		try {
@@ -84,7 +84,7 @@ public class OmniSearchTest {
 		}
 	}
 	
-	//@Test
+	@Test
 	public void t3_TwiterSimpleSearch() {
 		GenericRetrievable gr = new OmniMongoDataProvider();
 		String rs = gr.getData("twitter", 
@@ -95,7 +95,7 @@ public class OmniSearchTest {
 		assertTrue("result set is returned with no error", !rs.isEmpty());
 	}
 	
-	@Test
+	/*@Test
 	public void t4_TwiterSimpleSearch2() {
 		GenericRetrievable gr = new OmniMongoDataProvider();
 		String rs = gr.getData("business_licenses", 
@@ -104,6 +104,6 @@ public class OmniSearchTest {
 				20,
 				null);		
 		assertTrue("result set is returned with no error", !rs.isEmpty());
-	}
+	}*/
 }
 
