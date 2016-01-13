@@ -6,6 +6,7 @@ public class QuickSearch {
 	private String triggerAlias;
 	private Integer defaultMax;
 	private String defaultSort;
+	private String baseClientFilter;
 	
 	public boolean isEnable() {
 		return enable;
@@ -45,6 +46,14 @@ public class QuickSearch {
 
 	public void setDefaultSort(String defaultSort) {
 		this.defaultSort = defaultSort;
+	}
+
+	public String getBaseClientFilter() {
+		return baseClientFilter;
+	}
+
+	public void setBaseClientFilter(String baseClientFilter) {
+		this.baseClientFilter = baseClientFilter;
 	}
 		
 }
