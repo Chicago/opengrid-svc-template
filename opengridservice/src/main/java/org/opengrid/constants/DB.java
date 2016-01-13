@@ -6,6 +6,7 @@ public final class DB {
 	static public final String META_COLLECTION_NAME = "opengrid_meta";
 	static public final String QUERY_COLLECTION_NAME = "opengrid_query";
 	static public final String GROUPS_COLLECTION_NAME = "opengrid_groups";
+	static public final String LOV_COLLECTION_NAME = "opengrid_lov";
 	
 	static public final String EMPTY_OBJECT = "{}";
 }

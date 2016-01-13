@@ -11,6 +11,7 @@ public class OpenGridColumn {
 	private boolean list;
 	private boolean groupBy;
 	private boolean quickSearch;
+	private String listOfValuesId;
 	
 	private int sortOrder;
 
@@ -94,5 +95,12 @@ public class OpenGridColumn {
 		this.sortOrder = sortOrder;
 	}
 	
+	public String getListOfValuesId() {
+		return listOfValuesId;
+	}
+
+	public void setListOfValuesId(String listOfValuesId) {
+		this.listOfValuesId = listOfValuesId;
+	}
 	
 }

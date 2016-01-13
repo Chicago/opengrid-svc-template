@@ -6,7 +6,8 @@ import java.util.List;
 import io.jsonwebtoken.Claims;
 
 import org.apache.cxf.jaxrs.ext.MessageContext;
-import org.opengrid.constants.Exceptions;
+import org.opengrid.data.KeyValuePair;
+import org.opengrid.data.ListOfValuesDataProvider;
 import org.opengrid.data.GenericRetrievable;
 import org.opengrid.data.Retrievable;
 import org.opengrid.data.Updatable;
@@ -14,8 +15,8 @@ import org.opengrid.exception.ServiceException;
 import org.opengrid.security.RoleAccessValidator;
 import org.opengrid.security.TokenAuthenticationService;
 import org.opengrid.security.TokenHandler;
+import org.opengrid.service.AutoCompleteService;
 import org.opengrid.service.OpenGridService;
-import org.opengrid.util.ExceptionUtil;
 import org.opengrid.util.ServiceProperties;
 
 import javax.annotation.Resource;
@@ -26,7 +27,7 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
 @Component("OpenGridServiceBean")
-public class OpenGridMongoService implements OpenGridService {
+public class OpenGridMongoService implements OpenGridService, AutoCompleteService {
 	
 	@Resource(name="omniDataProvider")
 	private GenericRetrievable omniDataProvider;
@@ -210,6 +211,13 @@ public class OpenGridMongoService implements OpenGridService {
 	public void refreshOpenGridUserToken(MessageContext mc) {
 		tokenAuthService.setKey(ServiceProperties.getProperties().getStringProperty("auth.key"));
 		tokenAuthService.renewAuthentication(mc.getHttpServletRequest(), mc.getHttpServletResponse());
-	}		
+	}
+	
+	@Override
+	public List<KeyValuePair> getAutoCompleteSuggestions(String listId) {
+		ListOfValuesDataProvider p = new ListOfValuesDataProvider();
+		
+		return p.getList(listId);
+	}
 
 }
