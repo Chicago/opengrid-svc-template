@@ -1,0 +1,32 @@
+# Build version format
+# version: 1.0.{build}-{branch}
+
+#platform:
+#  - x64
+
+matrix:
+  fast_finish: true     # set this flag to immediately finish build once one of the jobs fails
+  
+services:
+  - mongodb
+
+before_build:  
+  - mongo --version
+  #import test json data
+  - mongo testdb --eval 'db.createUser( { "user":"build",pwd:"test","roles":[{"role":"readWrite","db":"testdb"}]});'  
+  - mongo testdb c:\projects\opengrid-svc-template\src\test\resources\testdata.js
+  
+build_script:
+  - mvn install -f .\opengridservice\pom.xml
+
+# to disable deployment
+deploy: off
+
+notifications:
+  # Email
+  - provider: Email
+    to:
+      - rladines@eki-consulting.com
+    subject: 'Build {{status}}'
+    message: "{{message}}, {{commitId}}, ..."
+    on_build_status_changed: true  
