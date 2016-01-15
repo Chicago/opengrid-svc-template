@@ -1,8 +1,4 @@
-# Build version format
-# version: 1.0.{build}-{branch}
-
-#platform:
-#  - x64
+version: 1.0.{build}-{branch}
 
 matrix:
   fast_finish: true     # set this flag to immediately finish build once one of the jobs fails
@@ -10,7 +6,9 @@ matrix:
 services:
   - mongodb
 
-before_build:  
+before_build:
+  #wait a few seconds before invoking mongo operations to give time for MongoDB to initialize
+  - ping -n 30 127.0.0.1 > nul
   - mongo --version
   #import test json data
   - mongo testdb --eval 'db.createUser( { "user":"build",pwd:"test","roles":[{"role":"readWrite","db":"testdb"}]});'  
