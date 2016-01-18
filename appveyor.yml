@@ -11,8 +11,8 @@ before_build:
   - ping -n 30 127.0.0.1 > nul
   - mongo --version
   #import test json data
-  - mongo testdb --eval 'db.createUser( { "user":"build",pwd:"test","roles":[{"role":"readWrite","db":"testdb"}]});'  
-  - mongo testdb c:\projects\opengrid-svc-template\src\test\resources\testdata.js
+  - c:\mongodb\bin\mongo testdb --eval 'db.createUser( { "user":"build",pwd:"test","roles":[{"role":"readWrite","db":"testdb"}]});'  
+  -  c:\mongodb\bin\mongo testdb c:\projects\opengrid-svc-template\src\test\resources\testdata.js
   
 build_script:
   - mvn install -f .\opengridservice\pom.xml
