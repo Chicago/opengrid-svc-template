@@ -38,5 +38,6 @@ notifications:
   # Email
   - provider: Email
     to:
-      - rladines@eki-consulting.com
-    on_build_status_changed: true  
+      - windygrid@cityofchicago.org
+      - developers@cityofchicago.org
+ on_build_status_changed: true
