@@ -20,6 +20,9 @@ install:
 services:
   - mongodb
 
+test_script:
+  - mvn test -f c:\projects\opengrid-svc-template\opengridservice\pom.xml
+
 before_build:
   #wait a few seconds before invoking mongo operations to give time for MongoDB to initialize
   - ping -n 30 127.0.0.1 > nul
