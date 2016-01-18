@@ -11,7 +11,7 @@ before_build:
   - ping -n 30 127.0.0.1 > nul
   - c:\mongodb\bin\mongo --version
   #import test json data
-  - c:\mongodb\bin\mongo testdb --eval "db.createUser( { 'user':'build1',pwd:'test','roles':[{'role':'readWrite','db':'testdb'}]});" 
+  - c:\mongodb\bin\mongo testdb --eval "db.createUser( { 'user':'build',pwd:'test','roles':[{'role':'readWrite','db':'testdb'}]});" 
   - c:\mongodb\bin\mongo testdb c:\projects\opengrid-svc-template\opengridservice\src\test\resources\testdata.js
   
 build_script:
