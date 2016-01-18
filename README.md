@@ -4,4 +4,4 @@
 
 This is the template service implementation of the OpenGrid application.
 
-Please refer to the [OpenGrid](https://github.com/Chicago/opengrid) repository for more details.
+Please refer to the [OpenGrid](https://github.com/Chicago/opengrid) project for more details.
