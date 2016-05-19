@@ -1,15 +1,10 @@
 package org.opengrid.data;
 
-import java.net.UnknownHostException;
-import java.util.Arrays;
-
 import org.opengrid.util.PropertiesManager;
 import org.opengrid.util.ServiceProperties;
 
-import com.mongodb.DB;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
-import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
 import com.mongodb.client.MongoDatabase;
 

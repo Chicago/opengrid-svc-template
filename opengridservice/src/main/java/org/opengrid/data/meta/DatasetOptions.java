@@ -11,6 +11,9 @@ public class DatasetOptions {
 	
 	//property to contain default sort info
 	private String defaultSort;
+	
+	//field name of the location field to use with $geoWithin operator, if supported 
+	private String locationField;
 
 	public Rendition getRendition() {
 		return rendition;
@@ -51,5 +54,13 @@ public class DatasetOptions {
 
 	public void setDefaultSort(String defaultSort) {
 		this.defaultSort = defaultSort;
+	}
+
+	public String getLocationField() {
+		return locationField;
+	}
+
+	public void setLocationField(String locationField) {
+		this.locationField = locationField;
 	}
 }

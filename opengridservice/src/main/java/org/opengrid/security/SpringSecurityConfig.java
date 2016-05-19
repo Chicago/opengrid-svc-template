@@ -1,6 +1,7 @@
 package org.opengrid.security;
 
 import javax.annotation.Resource;
+import javax.ws.rs.HttpMethod;
 
 import org.opengrid.security.impl.MongoTokenAuthenticationService;
 import org.opengrid.util.PropertiesManager;
@@ -57,7 +58,10 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/favicon.ico").permitAll()
                 .antMatchers("**/*.html").permitAll()
                 .antMatchers("**/*.css").permitAll()
-                .antMatchers("**/*.js").permitAll()                
+                .antMatchers("**/*.js").permitAll() 
+                
+                //Added to prevent CORS issue
+                .antMatchers(HttpMethod.OPTIONS,"/**").permitAll()                                 
  
                 // Allow anonymous login to auth and current resources
                 .antMatchers("/rest/users/token").permitAll()

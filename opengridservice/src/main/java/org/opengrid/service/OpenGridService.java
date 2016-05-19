@@ -6,10 +6,16 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 
 import org.apache.cxf.jaxrs.ext.MessageContext;
+import org.apache.cxf.rs.security.cors.CorsHeaderConstants;
+
+import org.opengrid.data.ServiceCapabilities;
 import org.opengrid.exception.ServiceException;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
+
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
 
 @Path("/")
 public interface OpenGridService {
@@ -47,7 +53,8 @@ public interface OpenGridService {
 	public String executeOpenGridQueryWithParams(@PathParam("datasetId") final String datasetId, 
 												@QueryParam("q") final String filter,
 												@QueryParam("n") final int max,
-												@QueryParam("s") final String sort
+												@QueryParam("s") final String sort,
+												@QueryParam("opts") final String options
 												);
 	
 	//lists queries meeting specified filter
@@ -165,5 +172,16 @@ public interface OpenGridService {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/groups/{groupId}")
 	public void deleteOpenGridGroup(@PathParam("groupId") final String groupId);
+	
+	
+	//returns capabilities flags
+	@GET 
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/capabilities")
+	public ServiceCapabilities getServiceCapabilities();
+
+	@OPTIONS
+	@Path("{path : .*}")
+	public Response options();
 	
 }

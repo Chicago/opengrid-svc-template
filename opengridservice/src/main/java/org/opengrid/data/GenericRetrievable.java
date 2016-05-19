@@ -11,7 +11,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 
 
 public interface GenericRetrievable {
-	String getData(String dataSetId, String metaCollectionName, String filter, int max, String sort) throws ServiceException;	
+	String getData(String dataSetId, String metaCollectionName, String filter, int max, String sort, String options) throws ServiceException;	
 	OpenGridDataset getDescriptor(String metaCollectionName, String dataSetId) throws ServiceException, JsonParseException, JsonMappingException, IOException;	
 	OpenGridDataset getDescriptorInternal(String metaCollectionName, String dataSetId, boolean removePrivates) throws ServiceException, JsonParseException, JsonMappingException, IOException;
 	List<String> getAllDatasetIds(String metaCollectionName) throws ServiceException, JsonParseException, JsonMappingException, IOException;	
