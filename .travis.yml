@@ -33,6 +33,6 @@ addons:
       name: "Chicago/opengrid-svc-template"
       description: "Build submitted via Travis CI"
     notification_email: developers@cityofchicago.org
-    build_command_prepend: "mvn clean"
+    build_command_prepend: "mvn install -f ./opengridservice/pom.xml"
     build_command: "mvn -DskipTests=true compile"
     branch_pattern: issue9
