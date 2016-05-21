@@ -1,6 +1,12 @@
 language: java
 sudo: required
 
+env:
+  global:
+   # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
+   #   via the "travis encrypt" command using the project repo's public key
+   - secure: "TYZ/Gzo5LyL1WJ6Sq8Dbzto8Gzm46o/cJJBaFIj2RJ0zclTX/beqSUajwONbzoT8IBDLcO7/cJ3/5fMJd8xpBNjDrLDi3pq/INtmCKn9gBnpk50Zxsay6U3BAoCXPS350xQNrvXyh/L2wv5Nbi71AYoqpMINweZNVJnTCT7NugmNnTdbQZddbeytN1vcufWiDS6+n71Uny998qV4mPTcLg7yJuSRAPhF1mIv8VH0hSfEy7IjEG6fmNIdCapSaisl1YVVn7NuUzf039aIDRN0k3mBsmPwyMfKD55oyvVIG3OqJRqp/Ld+4/OaL8Ffs0Q1qY2gtb+K/6M83iklNBdL1Wq55T9aKYkYviwTDN5Kq4HpN2t+tenLswvIgpT0M7vw75MfR+7MDaGVwRS2V7gZ4P5CMTeB5tCz/ffV5e69hcee6Ke7HRLaIx4YjFE3ZNmLTArt23rP1OgzlnVYdh9xzzwRGKflunzRd8wg+2oimMR5fvWzo5/y90V97WmfwUTH7W6eZ5w9fag/rZkHY3vF2cnzgU+8mQIBWs9T4aD28N19Uq2kkpC9cWIf0wXhdZ9iZjYgVFSXI8qE5nZimjxPelJF6ghpJXjQ6H3J7gvGWtu6i45A0DNzm63GtTHG21gQ0T63lSi8pnsa0SdNofHYIEMjjXOuhV6AxEwvt2mpRzI="
+
 before_script:
   - sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 7F0CEB10
   - echo "deb http://repo.mongodb.org/apt/ubuntu precise/mongodb-org/3.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.0.list
@@ -20,3 +26,13 @@ notifications:
   email:
     on_success: change
     on_failure: change
+
+addons:
+  coverity_scan:
+    project:
+      name: "Chicago/opengrid-svc-template"
+      description: "Build submitted via Travis CI"
+    notification_email: developers@cityofchicago.org
+    build_command_prepend: "mvn clean"
+    build_command: "mvn -DskipTests=true compile"
+    branch_pattern: issue9
