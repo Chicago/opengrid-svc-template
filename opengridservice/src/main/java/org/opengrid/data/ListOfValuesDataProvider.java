@@ -3,8 +3,6 @@ package org.opengrid.data;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.crypto.dsig.keyinfo.KeyValue;
-
 import org.bson.Document;
 import org.opengrid.constants.DB;
 import org.opengrid.constants.Exceptions;
@@ -35,7 +33,8 @@ public class ListOfValuesDataProvider {
 	    	FindIterable<Document> cur = c.find(q).limit(1);
 	    	if (cur.iterator().hasNext()) {
 	    		Document d = cur.first();
-	    		List<Document> a = (List<Document>) d.get("keyValues");
+	    		@SuppressWarnings("unchecked")
+				List<Document> a = (List<Document>) d.get("keyValues");
 	    		return getKeyValuePairs(a);
 	    	} else {
 	    		throw new ServiceException("Cannot find list of values with List Id '" + listId + "'.");

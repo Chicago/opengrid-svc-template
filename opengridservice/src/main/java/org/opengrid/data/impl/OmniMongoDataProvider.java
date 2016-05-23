@@ -6,10 +6,15 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.bson.BsonArray;
+import org.bson.BsonDocument;
+import org.bson.BsonValue;
 import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.opengrid.constants.Exceptions;
 import org.opengrid.data.GenericRetrievable;
 import org.opengrid.data.MongoDBHelper;
+import org.opengrid.data.QueryOptions;
 import org.opengrid.data.meta.OpenGridColumn;
 import org.opengrid.data.meta.OpenGridDataset;
 import org.opengrid.data.meta.OpenGridMeta;
@@ -19,7 +24,9 @@ import org.opengrid.util.ExceptionUtil;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
+import com.mongodb.MongoClient;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
@@ -29,7 +36,7 @@ import com.mongodb.util.JSON;
 public class OmniMongoDataProvider implements GenericRetrievable {
 
 	@Override
-	public String getData(String dataSetId, String metaCollectionName, String filter, int max, String sort) throws ServiceException {		
+	public String getData(String dataSetId, String metaCollectionName, String filter, int max, String sort, String options) throws ServiceException {		
 		MongoDBHelper ds = null;
 		MongoDatabase db = null;
 				
@@ -65,6 +72,18 @@ public class OmniMongoDataProvider implements GenericRetrievable {
 					//no filter
 					q = (BasicDBObject) JSON.parse("{}");
 				}				
+			}
+
+			//read new options parameter that contains geo-spatial filter
+			if (options != null && options.length()>0) {
+				BasicDBObject qo = getQueryOptions(options);
+				if (qo !=null) {
+					if (desc.getOptions().getLocationField() == null || desc.getOptions().getLocationField().length() == 0) {
+						throw new ServiceException("No locationField option specified for dataset " + dataSetId);
+					}
+					//add geo filter to query
+					appendGeoFilter(q, qo, desc.getOptions().getLocationField());
+				}
 			}
 
 	    	FindIterable<Document> cur = c.find(q);
@@ -121,6 +140,38 @@ public class OmniMongoDataProvider implements GenericRetrievable {
 	}
 
 	
+	private void appendGeoFilter(BasicDBObject q, BasicDBObject geoFilter, String locationField) {
+		//this only works if you have a location field
+		BasicDBObject geo = (BasicDBObject) JSON.parse("{ \"" + locationField + "\": { \"$geoWithin\": { \"$geometry\": " + geoFilter.toString() + "} } }");
+		if (q.containsField("$and")) {
+			//add to ANDed conditions
+			BasicDBList a = (BasicDBList) q.get("$and");
+			
+			a.add(geo);
+		} else {
+			BasicDBObject t = new BasicDBObject();
+			BasicDBList a = new BasicDBList();
+			
+			a.add(q);
+			a.add(geo);
+			t.put("$and", a);
+			q = t;
+		}
+		
+	}
+
+
+	private BasicDBObject getQueryOptions(String options)  {
+		BasicDBObject o =  (BasicDBObject) JSON.parse(options);
+		
+		if (o.containsField("geoFilter")) {
+			return (BasicDBObject) o.get("geoFilter");
+		}
+		
+		return null;
+	}
+
+
 	private String getFeature(Document doc2, OpenGridDataset desc) {
 
 		String s = "{\"type\": \"Feature\", \"properties\": ";

@@ -27,6 +27,10 @@ public class MongoTokenAuthenticationService implements TokenAuthenticationServi
 	public void addAuthentication(HttpServletResponse response, Authentication authentication) {
         final org.opengrid.security.impl.User user = (org.opengrid.security.impl.User) authentication.getDetails();
         response.addHeader(AUTH_HEADER_NAME, tokenHandler.createTokenForUser(user));
+                
+        //fix CORS issue
+        response.addHeader("Access-Control-Allow-Origin", "*");
+        response.addHeader("Access-Control-Expose-Headers", AUTH_HEADER_NAME);
     }
  
     public Authentication getAuthentication(HttpServletRequest request) {
@@ -62,6 +66,10 @@ public class MongoTokenAuthenticationService implements TokenAuthenticationServi
              
              //replace old token with new one
              response.setHeader(AUTH_HEADER_NAME, newToken);
+                          
+             //fix CORS issue
+             response.addHeader("Access-Control-Allow-Origin", "*");
+             response.addHeader("Access-Control-Expose-Headers", AUTH_HEADER_NAME);             
          }
     }
 
