@@ -247,4 +247,12 @@ public class OpenGridMongoService implements OpenGridService, AutoCompleteServic
                .build();       
 	}
 	
+
+	@Override
+	public String executeOpenGridQueryWithParamsPost(String datasetId, String filter, int max, String sort, String options) {
+		//this is called when POST method is used
+		//we have now transitioned to using POST as of core 1.3.0
+		return executeOpenGridQueryWithParams(datasetId, filter, max, sort, options);
+	}
+	
 }

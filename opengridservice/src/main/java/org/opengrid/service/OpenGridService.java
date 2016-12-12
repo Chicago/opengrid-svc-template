@@ -57,6 +57,18 @@ public interface OpenGridService {
 												@QueryParam("opts") final String options
 												);
 	
+	//executes query against one dataset/data type
+	//we are now transitioning to using POST to handle large geo-Spatial filter data
+	@POST
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/datasets/{datasetId}/query")
+	public String executeOpenGridQueryWithParamsPost(@PathParam("datasetId") final String datasetId, 
+												@FormParam("q") final String filter,
+												@FormParam("n") final int max,
+												@FormParam("s") final String sort,
+												@FormParam("opts") final String options
+												);	
+	
 	//lists queries meeting specified filter
 	@GET 
 	@Produces(MediaType.APPLICATION_JSON)
