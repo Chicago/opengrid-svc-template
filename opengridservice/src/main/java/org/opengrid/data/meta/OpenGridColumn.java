@@ -1,5 +1,8 @@
 package org.opengrid.data.meta;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class OpenGridColumn {
 	private String id;
 	private String displayName;

@@ -1,5 +1,8 @@
 package org.opengrid.data.meta;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class QuickSearch {
 	private boolean enable;
 	private String triggerWord;
@@ -7,6 +10,8 @@ public class QuickSearch {
 	private Integer defaultMax;
 	private String defaultSort;
 	private String baseClientFilter;
+	private String hintCaption;
+	private String hintExample;
 	
 	public boolean isEnable() {
 		return enable;
@@ -54,6 +59,22 @@ public class QuickSearch {
 
 	public void setBaseClientFilter(String baseClientFilter) {
 		this.baseClientFilter = baseClientFilter;
+	}
+
+	public String getHintCaption() {
+		return hintCaption;
+	}
+
+	public void setHintCaption(String hintCaption) {
+		this.hintCaption = hintCaption;
+	}
+
+	public String getHintExample() {
+		return hintExample;
+	}
+
+	public void setHintExample(String hintExample) {
+		this.hintExample = hintExample;
 	}
 		
 }

@@ -1,5 +1,10 @@
 package org.opengrid.data.meta;
 
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class DatasetOptions {
 	private Rendition rendition;
 	
@@ -14,6 +19,8 @@ public class DatasetOptions {
 	
 	//field name of the location field to use with $geoWithin operator, if supported 
 	private String locationField;
+	
+	private List<SupportedOperators> supportedOperators;
 
 	public Rendition getRendition() {
 		return rendition;
@@ -62,5 +69,13 @@ public class DatasetOptions {
 
 	public void setLocationField(String locationField) {
 		this.locationField = locationField;
+	}
+
+	public List<SupportedOperators> getSupportedOperators() {
+		return supportedOperators;
+	}
+
+	public void setSupportedOperators(List<SupportedOperators> supportedOperators) {
+		this.supportedOperators = supportedOperators;
 	}
 }

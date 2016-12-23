@@ -2,10 +2,11 @@ package org.opengrid.data.meta;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class OpenGridDataset {
 	private String id;
 	private String displayName;
