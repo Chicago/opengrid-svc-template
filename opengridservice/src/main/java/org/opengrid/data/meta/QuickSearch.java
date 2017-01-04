@@ -12,6 +12,7 @@ public class QuickSearch {
 	private String baseClientFilter;
 	private String hintCaption;
 	private String hintExample;
+	private String hintDescription;
 	
 	public boolean isEnable() {
 		return enable;
@@ -75,6 +76,14 @@ public class QuickSearch {
 
 	public void setHintExample(String hintExample) {
 		this.hintExample = hintExample;
+	}
+
+	public String getHintDescription() {
+		return hintDescription;
+	}
+
+	public void setHintDescription(String hintDescription) {
+		this.hintDescription = hintDescription;
 	}
 		
 }
