@@ -6,10 +6,12 @@ import java.util.List;
 import io.jsonwebtoken.Claims;
 
 import org.apache.cxf.jaxrs.ext.MessageContext;
+import org.apache.cxf.rs.security.cors.CorsHeaderConstants;
 import org.opengrid.data.KeyValuePair;
 import org.opengrid.data.ListOfValuesDataProvider;
 import org.opengrid.data.GenericRetrievable;
 import org.opengrid.data.Retrievable;
+import org.opengrid.data.ServiceCapabilities;
 import org.opengrid.data.Updatable;
 import org.opengrid.exception.ServiceException;
 import org.opengrid.security.RoleAccessValidator;
@@ -25,6 +27,9 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
+
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
 
 @Component("OpenGridServiceBean")
 public class OpenGridMongoService implements OpenGridService, AutoCompleteService {
@@ -94,13 +99,14 @@ public class OpenGridMongoService implements OpenGridService, AutoCompleteServic
 
 
 	@Override
-	public String executeOpenGridQueryWithParams(String datasetId, String filter, int max, String sort) {
+	public String executeOpenGridQueryWithParams(String datasetId, String filter, int max, String sort, String options) {
 		return omniDataProvider.getData(
 				datasetId,
 				ServiceProperties.getProperties().getStringProperty("mongo.metaCollectionName"), 
 				filter, 
 				max,
-				sort);
+				sort,
+				options);
 	}
 
 
@@ -220,4 +226,33 @@ public class OpenGridMongoService implements OpenGridService, AutoCompleteServic
 		return p.getList(listId);
 	}
 
+
+	@Override
+	public ServiceCapabilities getServiceCapabilities() {
+		//customize this depending on what this service implementation support
+		ServiceCapabilities sc = new ServiceCapabilities();
+		
+		sc.setGeoSpatialFiltering(true);
+		return sc;
+	}
+
+	@Override
+	public Response options() {
+	    return Response.ok()
+	    		.header(CorsHeaderConstants.HEADER_AC_ALLOW_HEADERS, "origin, content-type, accept, authorization, X-AUTH-TOKEN")
+	    		.header(CorsHeaderConstants.HEADER_AC_ALLOW_METHODS, "GET, POST, PUT, DELETE, OPTIONS, HEAD")
+               //.header(CorsHeaderConstants.HEADER_AC_ALLOW_CREDENTIALS, "false")
+               //.header(CorsHeaderConstants.HEADER_AC_ALLOW_ORIGIN, "*")
+               .header(CorsHeaderConstants.HEADER_AC_EXPOSE_HEADERS, "X-AUTH-TOKEN")
+               .build();       
+	}
+	
+
+	@Override
+	public String executeOpenGridQueryWithParamsPost(String datasetId, String filter, int max, String sort, String options) {
+		//this is called when POST method is used
+		//we have now transitioned to using POST as of core 1.3.0
+		return executeOpenGridQueryWithParams(datasetId, filter, max, sort, options);
+	}
+	
 }

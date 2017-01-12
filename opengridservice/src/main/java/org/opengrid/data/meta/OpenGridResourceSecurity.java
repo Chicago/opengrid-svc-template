@@ -1,5 +1,8 @@
 package org.opengrid.data.meta;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class OpenGridResourceSecurity {
 	private String urlPattern;
 	private String httpMethod;
