@@ -1,5 +1,7 @@
 package org.opengrid.data.meta;
 
+import java.util.List;
+
 public class DatasetOptions {
 	private Rendition rendition;
 	
@@ -13,6 +15,8 @@ public class DatasetOptions {
 	private String defaultSort;
 	
 	private String locationField;
+	
+	private List<SupportedOperators> supportedOperators;
 	
 	//chart options
 	private Chart chart;
@@ -65,6 +69,14 @@ public class DatasetOptions {
  		this.locationField = locationField;
  	}
 
+ 	public List<SupportedOperators> getSupportedOperators() {
+		return supportedOperators;
+	}
+
+	public void setSupportedOperators(List<SupportedOperators> supportedOperators) {
+		this.supportedOperators = supportedOperators;
+	}
+ 	
 	public Chart getChart() {
 		return chart;
 	}
