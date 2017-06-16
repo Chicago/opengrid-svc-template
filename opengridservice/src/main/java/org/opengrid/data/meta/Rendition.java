@@ -1,14 +1,12 @@
 package org.opengrid.data.meta;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class Rendition {
 	private String icon;
 	private String color;
 	private String fillColor;
 	private int opacity;
 	private int size;
+	private int borderWidth=3;
 	
 	
 	public String getIcon() {
@@ -40,6 +38,12 @@ public class Rendition {
 	}
 	public void setSize(int size) {
 		this.size = size;
+	}
+	public int getBorderWidth() {
+		return borderWidth;
+	}
+	public void setBorderWidth(int borderWidth) {
+		this.borderWidth = borderWidth;
 	}
 	
 }

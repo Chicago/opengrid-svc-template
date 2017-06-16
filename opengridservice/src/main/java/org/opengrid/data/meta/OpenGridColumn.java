@@ -1,8 +1,5 @@
 package org.opengrid.data.meta;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class OpenGridColumn {
 	private String id;
 	private String displayName;
@@ -14,7 +11,12 @@ public class OpenGridColumn {
 	private boolean list;
 	private boolean groupBy;
 	private boolean quickSearch;
+	private boolean array;
 	private String listOfValuesId;
+	private String format;
+	
+	//info for sizing dots based on value of this field
+	private DotSizer dotSizer; 
 	
 	private int sortOrder;
 
@@ -97,7 +99,7 @@ public class OpenGridColumn {
 	public void setSortOrder(int sortOrder) {
 		this.sortOrder = sortOrder;
 	}
-	
+
 	public String getListOfValuesId() {
 		return listOfValuesId;
 	}
@@ -105,5 +107,29 @@ public class OpenGridColumn {
 	public void setListOfValuesId(String listOfValuesId) {
 		this.listOfValuesId = listOfValuesId;
 	}
-	
+
+	public boolean isArray() {
+		return array;
+	}
+
+	public void setArray(boolean array) {
+		this.array = array;
+	}
+
+	public DotSizer getDotSizer() {
+		return dotSizer;
+	}
+
+	public void setDotSizer(DotSizer dotSizer) {
+		this.dotSizer = dotSizer;
+	}
+
+	public String getFormat() {
+		return format;
+	}
+
+	public void setFormat(String format) {
+		this.format = format;
+	}
+
 }

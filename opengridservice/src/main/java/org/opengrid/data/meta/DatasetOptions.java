@@ -1,10 +1,5 @@
 package org.opengrid.data.meta;
 
-import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class DatasetOptions {
 	private Rendition rendition;
 	
@@ -17,11 +12,11 @@ public class DatasetOptions {
 	//property to contain default sort info
 	private String defaultSort;
 	
-	//field name of the location field to use with $geoWithin operator, if supported 
 	private String locationField;
 	
-	private List<SupportedOperators> supportedOperators;
-
+	//chart options
+	private Chart chart;
+	
 	public Rendition getRendition() {
 		return rendition;
 	}
@@ -62,20 +57,19 @@ public class DatasetOptions {
 	public void setDefaultSort(String defaultSort) {
 		this.defaultSort = defaultSort;
 	}
-
 	public String getLocationField() {
-		return locationField;
+		 		return locationField;
+		 	}
+		 
+ 	public void setLocationField(String locationField) {
+ 		this.locationField = locationField;
+ 	}
+
+	public Chart getChart() {
+		return chart;
 	}
 
-	public void setLocationField(String locationField) {
-		this.locationField = locationField;
-	}
-
-	public List<SupportedOperators> getSupportedOperators() {
-		return supportedOperators;
-	}
-
-	public void setSupportedOperators(List<SupportedOperators> supportedOperators) {
-		this.supportedOperators = supportedOperators;
+	public void setChart(Chart chart) {
+		this.chart = chart;
 	}
 }
